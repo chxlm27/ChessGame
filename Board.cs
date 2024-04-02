@@ -80,6 +80,8 @@ namespace Chess
             PlaceChessPieces();
         }
 
+
+
         private void PlaceChessPieces()
         {
             // Determine the size of each chess piece in the image
