@@ -1,44 +1,4 @@
-﻿/*using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-namespace Chess
-{
-    public class Board : UserControl
-    {
-        public const int BoardSize = 8;
-        public const int CellSize = 50; // Adjust as needed
-
-        private readonly PictureBox[,] _cells;
-
-        public Board()
-        {
-            _cells = new PictureBox[BoardSize, BoardSize];
-
-            // Initialize the board
-            for (int row = 0; row < BoardSize; row++)
-            {
-                for (int col = 0; col < BoardSize; col++)
-                {
-                    _cells[row, col] = new PictureBox
-                    {
-                        Size = new Size(CellSize, CellSize),
-                        Location = new Point(col * CellSize, row * CellSize),
-                        BackColor = (row + col) % 2 == 0 ? Color.White : Color.Gray
-                    };
-                    Controls.Add(_cells[row, col]);
-                }
-            }
-
-            // Adjust the size of the user control based on the cells
-            Size = new Size(BoardSize * CellSize, BoardSize * CellSize);
-        }
-    }
-}
-
-*/
-using System;
-using System.Drawing;
+﻿/*using System.Drawing;
 using System.Windows.Forms;
 
 namespace Chess
@@ -151,5 +111,80 @@ namespace Chess
         Knight,
         Bishop,
         Pawn
+    }
+}
+*/
+using System;
+using System.Drawing;
+using System.Runtime.CompilerServices;
+using System.Windows.Forms;
+
+namespace Chess
+{
+    public class Board : UserControl
+    {
+        private const int _size = 8;
+        private const int _cellSize = 50;
+        private int CellSize;
+        private PictureBox[,] cells = new PictureBox[_size, _size];
+        private Image _chessPiecesImage;
+
+        public Board()
+        {
+            // Load the chess pieces image
+            _chessPiecesImage = Image.FromFile("ChessPiecesArray.png");
+
+            // Initialize board cells
+            for (int i = 0; i < _size; i++)
+            {
+                for (int j = 0; j < _size; j++)
+                {
+                    cells[i, j] = new PictureBox
+                    {
+                        Width = _cellSize,
+                        Height = _cellSize,
+                        Location = new Point(j * _cellSize, i * _cellSize),
+                        BackColor = (i + j) % 2 == 0 ? Color.White : Color.Black
+                    };
+                    this.Controls.Add(cells[i, j]);
+                }
+            }
+
+            this.Width = _size * _cellSize;
+            this.Height = _size * _cellSize;
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            Graphics graphics = e.Graphics;
+
+            // Code to draw the board goes here
+            // ...
+
+            // Code to draw the pieces goes here
+            // ...
+        }
+
+        public void PlaceChessPieces()
+        {
+            // Code to place the chess pieces on the board goes here
+            // ...
+        }
+        public void RescaleBoard(int windowWidth, int windowHeight)
+        {
+            int width = windowWidth - 16;
+            int height = windowHeight - 39;
+            CellSize = Math.Min(width, height) / 8;
+
+            if (width < height)
+                this.SetBounds(0, (height - width) / 2, CellSize * 8, CellSize * 8);
+            else
+                this.SetBounds((width - height) / 2, 0, CellSize * 8, CellSize * 8);
+
+            this.Refresh();
+        }
+
+        // Any additional methods such as event handlers or helper methods for drawing, etc.
+        // ...
     }
 }
