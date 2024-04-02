@@ -116,7 +116,6 @@ namespace Chess
 */
 using System;
 using System.Drawing;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace Chess
@@ -126,7 +125,6 @@ namespace Chess
         private const int _size = 8;
         private const int _cellSize = 50;
         private int CellSize;
-        private PictureBox[,] cells = new PictureBox[_size, _size];
         private Image _chessPiecesImage;
 
         public Board()
@@ -134,35 +132,32 @@ namespace Chess
             // Load the chess pieces image
             _chessPiecesImage = Image.FromFile("ChessPiecesArray.png");
 
-            // Initialize board cells
-            for (int i = 0; i < _size; i++)
-            {
-                for (int j = 0; j < _size; j++)
-                {
-                    cells[i, j] = new PictureBox
-                    {
-                        Width = _cellSize,
-                        Height = _cellSize,
-                        Location = new Point(j * _cellSize, i * _cellSize),
-                        BackColor = (i + j) % 2 == 0 ? Color.White : Color.Black
-                    };
-                    this.Controls.Add(cells[i, j]);
-                }
-            }
-
+            // Set initial size of the board
             this.Width = _size * _cellSize;
             this.Height = _size * _cellSize;
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            Graphics graphics = e.Graphics;
+            base.OnPaint(e);
+            Bitmap doubleBufferingImage = new Bitmap(CellSize * 8, CellSize * 8);
+            using (Graphics doubleBufferingGraphics = Graphics.FromImage(doubleBufferingImage))
+            {
+                DrawSquares(doubleBufferingGraphics);
+                e.Graphics.DrawImage(doubleBufferingImage, 0, 0);
+            }
+        }
 
-            // Code to draw the board goes here
-            // ...
-
-            // Code to draw the pieces goes here
-            // ...
+        private void DrawSquares(Graphics g)
+        {
+            for (int i = 0; i < _size; i++)
+            {
+                for (int j = 0; j < _size; j++)
+                {
+                    Brush brush = ((i % 2 + j % 2) % 2 == 0) ? Brushes.LightYellow : Brushes.SaddleBrown;
+                    g.FillRectangle(brush, CellSize * j, CellSize * i, CellSize, CellSize);
+                }
+            }
         }
 
         public void PlaceChessPieces()
@@ -170,6 +165,7 @@ namespace Chess
             // Code to place the chess pieces on the board goes here
             // ...
         }
+
         public void RescaleBoard(int windowWidth, int windowHeight)
         {
             int width = windowWidth - 16;
