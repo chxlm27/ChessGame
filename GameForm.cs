@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+// aici trebuie scris cu resize..
 namespace ChessGame
 {
     public partial class GameForm : Form
