@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AGame.cs" />
+    <Compile Include="Pieces\APiece.cs" />
+    <Compile Include="Pieces\Bishop.cs" />
     <Compile Include="Board.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -57,6 +59,14 @@
     <Compile Include="GameForm.Designer.cs">
       <DependentUpon>GameForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PieceColors.cs" />
+    <Compile Include="Pieces\King.cs" />
+    <Compile Include="Pieces\Knight.cs" />
+    <Compile Include="Pieces\Pawn.cs" />
+    <Compile Include="Pieces\PieceFactory.cs" />
+    <Compile Include="Pieces\Pieces.cs" />
+    <Compile Include="Pieces\Queen.cs" />
+    <Compile Include="Pieces\Rook.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="GameForm.resx">
