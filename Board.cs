@@ -92,7 +92,7 @@ namespace Chess
         public void RescaleBoard(int windowWidth, int windowHeight)
         {
             // Calculate the new cell size, maintaining aspect ratio
-            int newCellSize = Math.Min((windowWidth - 16) / _size, (windowHeight - 39) / _size);
+            int newCellSize = Math.Min(windowWidth / _size, windowHeight / _size);
 
             // Set the new bounds for each cell
             for (int i = 0; i < _size; i++)
@@ -105,13 +105,20 @@ namespace Chess
                 }
             }
 
+            // Calculate the actual width and height of the board
+            int boardWidth = _size * newCellSize;
+            int boardHeight = _size * newCellSize;
+
             // Center the board within the form
-            this.Width = _size * newCellSize;
-            this.Height = _size * newCellSize;
-            this.Location = new Point((windowWidth - this.Width) / 2, (windowHeight - this.Height) / 2);
+            this.Width = boardWidth;
+            this.Height = boardHeight;
+            this.Location = new Point((windowWidth - boardWidth) / 2, (windowHeight - boardHeight) / 2);
 
             // Redraw the board to apply changes
             this.Refresh();
         }
+
+
+
     }
 }
