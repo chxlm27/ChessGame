@@ -28,7 +28,6 @@ namespace ChessGame
         {
             this.board = new Board(); // Create the chess board
             this.Controls.Add(this.board); // Add the chess board to the form
-            //this.ClientSize = new System.Drawing.Size(800, 800); // Set the form size
             this.SetBounds(0, 0, 800, 600);
             this.Text = "Chess Game"; // Set the form title
         }
