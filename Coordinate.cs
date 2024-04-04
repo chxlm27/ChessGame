@@ -2,7 +2,7 @@
 
 public class Coordinate
 {
-    private static readonly Dictionary<string, Coordinate> _instances = new Dictionary<string, Coordinate>();
+    private static Dictionary<string, Coordinate> _instances;
 
     public int X { get; }
     public int Y { get; }
@@ -15,8 +15,12 @@ public class Coordinate
 
     public static Coordinate GetInstance(int x, int y)
     {
-        string key = $"{x},{y}";
+        if (_instances == null)
+        {
+            _instances = new Dictionary<string, Coordinate>();
+        }
 
+        string key = $"{x},{y}";
 
         if (!_instances.ContainsKey(key))
         {

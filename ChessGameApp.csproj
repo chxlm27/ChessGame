@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AGame.cs" />
     <Compile Include="Coordinate.cs" />
+    <Compile Include="Layout.cs" />
     <Compile Include="Pieces\APiece.cs" />
     <Compile Include="Pieces\Bishop.cs" />
     <Compile Include="Board.cs">

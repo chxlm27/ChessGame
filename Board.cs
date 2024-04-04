@@ -8,117 +8,70 @@ namespace Chess
 {
     public class Board : UserControl
     {
-        private const int _size = 8;
-        private const int _cellSize = 50; // Initial size for the cells
-        private int CellSize = 50;
-        private Image _chessPiecesImage;
-        private PictureBox[,] _cells = new PictureBox[_size, _size];
+        public int CellSize { get; private set; }
+        public Dictionary<Coordinate, APiece> BoardState { get; private set; } // Added property to represent the state of the chessboard
 
         public Board()
         {
-            this.Width = _size * _cellSize;
-            this.Height = _size * _cellSize;
-            _chessPiecesImage = Image.FromFile("ChessPiecesArray.png");
-            InitializeCells();
-            PlaceChessPieces();
+            BoardState = new Dictionary<Coordinate, APiece>();
         }
 
-        private void InitializeCells()
+        public void Rescale(int windowWidth, int windowHeight)
         {
-            for (int i = 0; i < _size; i++)
-            {
-                for (int j = 0; j < _size; j++)
-                {
-                    _cells[i, j] = new PictureBox
-                    {
-                        Width = _cellSize,
-                        Height = _cellSize,
-                        Location = new Point(j * _cellSize, i * _cellSize),
-                        BackColor = ((i + j) % 2 == 0) ? Color.LightYellow : Color.SaddleBrown,
-                        SizeMode = PictureBoxSizeMode.StretchImage
-                    };
-                    this.Controls.Add(_cells[i, j]);
-                }
-            }
-        }
+            int width = windowWidth - 16;
+            int height = windowHeight - 39;
 
-        private void PlaceChessPieces()
-        {
-            int pieceWidth = _chessPiecesImage.Width / 6;
-            int pieceHeight = _chessPiecesImage.Height / 2;
+            CellSize = Math.Min(width, height) / 8;
 
-            for (int row = 0; row < _size; row++)
-            {
-                for (int col = 0; col < _size; col++)
-                {
-                    int pieceIndex = GetPieceIndex(row, col);
-                    if (pieceIndex != -1)
-                    {
-                        int x = pieceIndex * pieceWidth;
-                        int y = (row < _size / 2) ? 0 : pieceHeight; // Top half of image for black, bottom for white
-
-                        Rectangle pieceRect = new Rectangle(x, y, pieceWidth, pieceHeight);
-                        _cells[row, col].Image = CropImage(_chessPiecesImage, pieceRect);
-                    }
-                }
-            }
-        }
-
-        private Image CropImage(Image image, Rectangle source)
-        {
-            Bitmap bmp = new Bitmap(source.Width, source.Height);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                g.DrawImage(image, 0, 0, source, GraphicsUnit.Pixel);
-            }
-            return bmp;
-        }
-
-        private int GetPieceIndex(int row, int col)
-        {
-            // Correct piece placement at the beginning of a chess game
-            if (row == 1 || row == 6)
-            {
-                return 5; // Pawn
-            }
-            else if (row == 0 || row == 7)
-            {
-                int[] order = { 2, 3, 4, 1, 0, 4, 3, 2 }; // Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook
-                return order[col];
-            }
-            return -1; // No piece
-        }
-
-        public void RescaleBoard(int windowWidth, int windowHeight)
-        {
-            // Calculate the new cell size, maintaining aspect ratio
-            int newCellSize = Math.Min(windowWidth / _size, windowHeight / _size);
-
-            // Set the new bounds for each cell
-            for (int i = 0; i < _size; i++)
-            {
-                for (int j = 0; j < _size; j++)
-                {
-                    _cells[i, j].Width = newCellSize;
-                    _cells[i, j].Height = newCellSize;
-                    _cells[i, j].Location = new Point(j * newCellSize, i * newCellSize);
-                }
-            }
-
-            // Calculate the actual width and height of the board
-            int boardWidth = _size * newCellSize;
-            int boardHeight = _size * newCellSize;
-
-            // Center the board within the form
-            this.Width = boardWidth;
-            this.Height = boardHeight;
-            this.Location = new Point((windowWidth - boardWidth) / 2, (windowHeight - boardHeight) / 2);
-
-            // Redraw the board to apply changes
+            this.SetBounds((width < height ? 0 : (width - height) / 2), (width < height ? (height - width) / 2 : 0), CellSize * 8, CellSize * 8);
             this.Refresh();
         }
 
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            Bitmap doubleBufferingImage = new Bitmap(CellSize * 8, CellSize * 8);
+            Graphics doubleBufferingGraphics = Graphics.FromImage(doubleBufferingImage);
 
+            DrawSquares(doubleBufferingGraphics);
+            DrawLayout(doubleBufferingGraphics);
+            e.Graphics.DrawImage(doubleBufferingImage, 0, 0);
+        }
+        private void DrawSquares(Graphics g)
+        {
+            for (int i = 0; i < 8; i++) 
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if ((i % 2 + j % 2) % 2 == 0)
+                        g.FillRectangle(System.Drawing.Brushes.LightYellow, CellSize * j, CellSize * i, CellSize, CellSize);
+                    else
+                        g.FillRectangle(System.Drawing.Brushes.SaddleBrown, CellSize * j, CellSize * i, CellSize, CellSize);
+                }
+            }
+        }
+        private void DrawLayout(Graphics g)
+        {
+/*            // Replace "YourImageFilePath" with the actual path to your image file
+            Image image = Image.FromFile("ChessPiecesArray.png");
+            int imageSize = CellSize * 8;
+
+            // Draw the image
+            g.DrawImage(image, 0, 0, imageSize, imageSize);*/
+        }
+
+/*        private void DrawLayout(Graphics g)
+        {
+            foreach (var kvp in BoardState)
+            {
+                Coordinate coordinate = kvp.Key;
+                APiece piece = kvp.Value;
+                // Draw the piece at the correct position on the board
+                // You need to implement the drawing logic based on the piece type and color
+                // For simplicity, let's assume drawing a placeholder rectangle
+                Brush pieceBrush = piece.Color == PieceColors.White ? Brushes.White : Brushes.Black;
+                g.FillRectangle(pieceBrush, coordinate.X * CellSize, coordinate.Y * CellSize, CellSize, CellSize);
+            }
+        }*/
     }
 }

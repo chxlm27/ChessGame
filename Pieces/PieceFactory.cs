@@ -26,3 +26,4 @@ namespace Chess
         }
     }
 }
+//dict de coord si piese
