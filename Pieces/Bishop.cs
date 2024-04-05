@@ -4,8 +4,8 @@ namespace Chess
 {
     public class Bishop : APiece
     {
-        private static readonly Rectangle BlackBishopRect = new Rectangle(237, 0, 64, 64);
-        private static readonly Rectangle WhiteBishopRect = new Rectangle(237, 59, 64, 64);
+        private static readonly Rectangle WhiteBishopRect = new Rectangle(237, 0, 64, 64);
+        private static readonly Rectangle BlackBishopRect = new Rectangle(237, 59, 64, 64);
 
         public Bishop(PieceColors color) : base(color)
         {

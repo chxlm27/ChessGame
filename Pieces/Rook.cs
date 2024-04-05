@@ -4,8 +4,8 @@ namespace Chess
 {
     public class Rook : APiece
     {
-        private static readonly Rectangle BlackRookRect = new Rectangle(118, 0, 64, 64);
-        private static readonly Rectangle WhiteRookRect = new Rectangle(118, 59, 64, 64);
+        private static readonly Rectangle WhiteRookRect = new Rectangle(118, 0, 64, 64);
+        private static readonly Rectangle BlackRookRect = new Rectangle(118, 59, 64, 64);
 
         public Rook(PieceColors color) : base(color)
         {

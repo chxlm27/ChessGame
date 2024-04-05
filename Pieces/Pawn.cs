@@ -4,8 +4,8 @@ namespace Chess
 {
     public class Pawn : APiece
     {
-        private static readonly Rectangle BlackPawnRect = new Rectangle(298, 0, 64, 64);
-        private static readonly Rectangle WhitePawnRect = new Rectangle(298, 59, 64, 64);
+        private static readonly Rectangle WhitePawnRect = new Rectangle(298, 0, 64, 64);
+        private static readonly Rectangle BlackPawnRect = new Rectangle(298, 59, 64, 64);
 
         public Pawn(PieceColors color) : base(color)
         {

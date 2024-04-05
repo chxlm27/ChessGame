@@ -4,8 +4,8 @@ namespace Chess
 {
     public class Knight : APiece
     {
-        private static readonly Rectangle BlackKnightRect = new Rectangle(180, 0, 64, 64);
-        private static readonly Rectangle WhiteKnightRect = new Rectangle(180, 59, 64, 64);
+        private static readonly Rectangle WhiteKnightRect = new Rectangle(180, 0, 64, 64);
+        private static readonly Rectangle BlackKnightRect = new Rectangle(180, 59, 64, 64);
 
         public Knight(PieceColors color) : base(color)
         {
