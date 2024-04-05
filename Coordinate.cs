@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Drawing.Text;
 
 public class Coordinate
 {
-    private static Dictionary<string, Coordinate> _instances;
+    private static Dictionary<int, Dictionary<int, Coordinate>> _instances;
 
     public int X { get; }
     public int Y { get; }
@@ -17,15 +18,19 @@ public class Coordinate
     {
         if (_instances == null)
         {
-            _instances = new Dictionary<string, Coordinate>();
+            _instances = new Dictionary<int, Dictionary<int, Coordinate>>();
         }
 
-        string key = $"{x},{y}";
-
-        if (!_instances.ContainsKey(key))
+        if (!_instances.ContainsKey(x))
         {
-            _instances[key] = new Coordinate(x, y);
+            _instances[x] = new Dictionary<int, Coordinate>();
         }
-        return _instances[key];
+
+        if (!_instances[x].ContainsKey(y))
+        {
+            _instances[x][y] = new Coordinate(x, y);
+        }
+
+        return _instances[x][y];
     }
 }
