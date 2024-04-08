@@ -5,10 +5,11 @@ namespace Chess
     public abstract class APiece
     {
         public PieceColors Color { get; }
-
-        protected APiece(PieceColors color)
+        public PieceType Type { get; }
+        protected APiece(PieceColors color, PieceType type)
         {
             Color = color;
+            Type = type;
         }
 
         public abstract Image GetImage();
