@@ -11,11 +11,6 @@ namespace Chess
         {
         }
 
-        public override void Move()
-        {
-            // Implement king movement logic
-        }
-
         public override Image GetImage()
         {
             // Return the appropriate portion of the chess pieces array image based on the piece color

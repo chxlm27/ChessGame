@@ -26,10 +26,58 @@ namespace ChessGame
 
         private void InitializeComponent()
         {
-            this.board = new Board(); // Create the chess board
-            this.Controls.Add(this.board); // Add the chess board to the form
-            this.SetBounds(0, 0, 600, 800);
-            this.Text = "Chess Game"; // Set the form title
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.gameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.beginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gameToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(284, 24);
+            this.menuStrip1.TabIndex = 0;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // gameToolStripMenuItem
+            // 
+            this.gameToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.beginToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.gameToolStripMenuItem.Name = "gameToolStripMenuItem";
+            this.gameToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.gameToolStripMenuItem.Text = "&Game";
+            // 
+            // beginToolStripMenuItem
+            // 
+            this.beginToolStripMenuItem.Name = "beginToolStripMenuItem";
+            this.beginToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.beginToolStripMenuItem.Text = "&Begin";
+            this.beginToolStripMenuItem.Click += new System.EventHandler(this.beginToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // GameForm
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
+            this.Name = "GameForm";
+            this.Text = "Chess Game";
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #region Windows Form Designer generated code
@@ -40,5 +88,10 @@ namespace ChessGame
         /// </summary>
 
         #endregion
+
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem gameToolStripMenuItem;
+        private ToolStripMenuItem beginToolStripMenuItem;
+        private ToolStripMenuItem exitToolStripMenuItem;
     }
 }

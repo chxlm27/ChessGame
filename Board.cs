@@ -9,24 +9,26 @@ namespace Chess
     {
         public int CellSize { get; private set; }
 
-        public Dictionary<Coordinate, APiece> BoardState { get; private set; }
+        private ALayout Layout { get; set; }
 
         public Board()
         {
-            BoardState = new Dictionary<Coordinate, APiece>();
-            ChessLayout layout = new ChessLayout();
-            layout.InitializeLayout();
-            BoardState = layout;
         }
 
-        public void Rescale(int windowWidth, int windowHeight)
+        public void Initialize()
+        {
+            Layout = new ChessLayout();
+            Layout.Initialize();
+        }
+
+        public void Rescale(int windowWidth, int windowHeight, int menuHeight)
         {
             int width = windowWidth - 16;
-            int height = windowHeight - 39;
+            int height = windowHeight - 39 - menuHeight;
 
             CellSize = Math.Min(width, height) / 8;
-            this.SetBounds((width < height ? 0 : (width - height) / 2),
-                           (width < height ? (height - width) / 2 : 0),
+            this.SetBounds((width < height ? 0 : (width - height) / 2 ),
+                           (width < height ? (height - width) / 2 + menuHeight : menuHeight),
                            CellSize * 8, CellSize * 8);
             this.Refresh();
         }
@@ -54,10 +56,9 @@ namespace Chess
 
         private void DrawLayout(Graphics g)
         {
-            foreach (Coordinate c in BoardState.Keys)
+            foreach (Coordinate c in Layout.Keys)
             {
-                APiece piece = BoardState[c];
-                g.DrawImage(piece.GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
+                g.DrawImage(Layout[c].GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
             }
         }
 

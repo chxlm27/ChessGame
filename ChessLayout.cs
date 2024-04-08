@@ -9,7 +9,7 @@ namespace Chess
         {
         }
 
-        public override void InitializeLayout()
+        public override void Initialize()
         {
             this.Add(Coordinate.GetInstance(7, 0), PieceFactory.CreatePiece(PieceType.Rook, PieceColors.Black));
             this.Add(Coordinate.GetInstance(7, 1), PieceFactory.CreatePiece(PieceType.Knight, PieceColors.Black));

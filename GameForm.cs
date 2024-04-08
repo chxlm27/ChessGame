@@ -16,7 +16,20 @@ namespace ChessGame
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            board?.Rescale(this.Width, this.Height);
+            board?.Rescale(this.Width, this.Height, menuStrip1.Height);
+        }
+
+        private void beginToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            board = new Board();
+            board.Initialize();
+            Controls.Add(board);
+            board.Rescale(this.Width, this.Height, menuStrip1.Height);
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

@@ -4,16 +4,12 @@ namespace Chess
 {
     public class Pawn : APiece
     {
+       // public int WhiteImage { get; set; }
         private static readonly Rectangle WhitePawnRect = new Rectangle(298, 0, 64, 64);
         private static readonly Rectangle BlackPawnRect = new Rectangle(298, 59, 64, 64);
 
         public Pawn(PieceColors color) : base(color)
         {
-        }
-
-        public override void Move()
-        {
-            // Implement pawn movement logic
         }
 
         public override Image GetImage()

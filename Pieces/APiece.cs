@@ -13,8 +13,6 @@ namespace Chess
             Color = color;
         }
 
-        public abstract void Move();
-
         public abstract Image GetImage();
     }
 }

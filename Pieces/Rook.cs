@@ -11,10 +11,6 @@ namespace Chess
         {
         }
 
-        public override void Move()
-        {
-            // Implement rook movement logic
-        }
 
         public override Image GetImage()
         {
