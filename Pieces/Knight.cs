@@ -4,8 +4,8 @@ namespace Chess
 {
     public class Knight : APiece
     {
-        private static readonly Rectangle WhiteKnightRect = new Rectangle(180, 0, 64, 64);
-        private static readonly Rectangle BlackKnightRect = new Rectangle(180, 59, 64, 64);
+        private static Bitmap ChessPiecesBitmap = new Bitmap("ChessPiecesArray.png");
+        private static readonly int NumColumns = 6; // Number of columns in the ChessPiecesArray.png
 
         public Knight(PieceColors color) : base(color)
         {
@@ -13,15 +13,18 @@ namespace Chess
 
         public override Image GetImage()
         {
-            // Return the appropriate portion of the chess pieces array image based on the piece color
-            if (Color == PieceColors.White)
-            {
-                return CropImage(ChessPiecesImage, WhiteKnightRect);
-            }
-            else
-            {
-                return CropImage(ChessPiecesImage, BlackKnightRect);
-            }
+            int pieceWidth = ChessPiecesBitmap.Width / NumColumns;
+            int pieceHeight = ChessPiecesBitmap.Height / 2; // Dividing by 2 for black and white pieces
+
+            // Calculate the x-coordinate of the piece in the bitmap
+            int x = ((int)PieceType.Knight * pieceWidth);
+
+            // Calculate the y-coordinate of the piece in the bitmap
+            int y = (Color == PieceColors.White) ? 0 : pieceHeight;
+
+            // Crop the piece from the bitmap
+            Rectangle cropRect = new Rectangle(x, y, pieceWidth, pieceHeight);
+            return CropImage(ChessPiecesBitmap, cropRect);
         }
 
         // Helper method to crop the image based on a specified rectangle

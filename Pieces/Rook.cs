@@ -4,25 +4,27 @@ namespace Chess
 {
     public class Rook : APiece
     {
-        private static readonly Rectangle WhiteRookRect = new Rectangle(118, 0, 64, 64);
-        private static readonly Rectangle BlackRookRect = new Rectangle(118, 59, 64, 64);
+        private static Bitmap ChessPiecesBitmap = new Bitmap("ChessPiecesArray.png");
+        private static readonly int NumColumns = 6; // Number of columns in the ChessPiecesArray.png
 
         public Rook(PieceColors color) : base(color)
         {
         }
 
-
         public override Image GetImage()
         {
-            // Return the appropriate portion of the chess pieces array image based on the piece color
-            if (Color == PieceColors.White)
-            {
-                return CropImage(ChessPiecesImage, WhiteRookRect);
-            }
-            else
-            {
-                return CropImage(ChessPiecesImage, BlackRookRect);
-            }
+            int pieceWidth = ChessPiecesBitmap.Width / NumColumns;
+            int pieceHeight = ChessPiecesBitmap.Height / 2; // Dividing by 2 for black and white pieces
+
+            // Calculate the x-coordinate of the piece in the bitmap
+            int x = ((int)PieceType.Rook * pieceWidth);
+
+            // Calculate the y-coordinate of the piece in the bitmap
+            int y = (Color == PieceColors.White) ? 0 : pieceHeight;
+
+            // Crop the piece from the bitmap
+            Rectangle cropRect = new Rectangle(x, y, pieceWidth, pieceHeight);
+            return CropImage(ChessPiecesBitmap, cropRect);
         }
 
         // Helper method to crop the image based on a specified rectangle
