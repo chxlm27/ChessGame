@@ -10,9 +10,31 @@ namespace Chess
         public int CellSize { get; private set; }
 
         private ALayout Layout { get; set; }
+        private Coordinate lastHoveredCell = Coordinate.GetInstance(0, 0);
 
         public Board()
         {
+            this.MouseMove += Board_MouseMove;
+        }
+
+        private void Board_MouseMove(object sender, MouseEventArgs e)
+        {
+            int mouseX = e.X / CellSize;
+            int mouseY = e.Y / CellSize;
+            Coordinate currentHoveredCell = Coordinate.GetInstance(mouseY, mouseX);
+
+            if (lastHoveredCell != currentHoveredCell)
+            {
+                Console.WriteLine($"Mouse moved from {lastHoveredCell.X},{lastHoveredCell.Y} to {currentHoveredCell.X},{currentHoveredCell.Y}");
+
+                if (Layout.ContainsKey(currentHoveredCell))
+                {
+                    APiece piece = Layout[currentHoveredCell];
+                    Console.WriteLine($"Chess piece at {currentHoveredCell.X},{currentHoveredCell.Y}: {piece.Type} ({piece.Color})");
+                }
+
+                lastHoveredCell = currentHoveredCell;
+            }
         }
 
         public void Initialize()
@@ -27,7 +49,7 @@ namespace Chess
             int height = windowHeight - 39 - menuHeight;
 
             CellSize = Math.Min(width, height) / 8;
-            this.SetBounds((width < height ? 0 : (width - height) / 2 ),
+            this.SetBounds((width < height ? 0 : (width - height) / 2),
                            (width < height ? (height - width) / 2 + menuHeight : menuHeight),
                            CellSize * 8, CellSize * 8);
             this.Refresh();
@@ -61,6 +83,5 @@ namespace Chess
                 g.DrawImage(Layout[c].GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
             }
         }
-
     }
 }
