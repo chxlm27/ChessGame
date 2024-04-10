@@ -14,8 +14,6 @@ namespace Chess
 
         private Coordinate LastHoveredCell;
 
-        private int MouseOverCellX;
-        private int MouseOverCellY;
         private int _highlightThickness = 2;
 
         public Board()
@@ -114,11 +112,9 @@ namespace Chess
                     List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell);
                     foreach (Coordinate destinationCoordinate in availableMoves)
                     {
-                        // Use a stronger green color for the highlight pen
                         Pen highlightPen = new Pen(Color.FromArgb(0, 255, 0), _highlightThickness);
                         g.DrawRectangle(highlightPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
 
-                        // Draw a rectangle with the same dimensions, but with a lighter green color
                         highlightPen = new Pen(Color.FromArgb(173, 255, 47), _highlightThickness - 2);
                         g.DrawRectangle(highlightPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
                     }
