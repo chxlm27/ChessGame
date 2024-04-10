@@ -5,9 +5,10 @@ namespace Chess
 {
     public abstract class APiece
     {
-        protected static Bitmap ChessPiecesBitmap = new Bitmap("ChessPiecesArray.png");
-        protected static readonly int NumColumns = 6;
-        protected Dictionary<(PieceType, PieceColors), Bitmap> PieceImages = new Dictionary<(PieceType, PieceColors), Bitmap>();
+        private static Bitmap ChessPiecesBitmap = new Bitmap("ChessPiecesArray.png");
+        private static readonly int NumberOfPieceTypes = 6;
+        private Dictionary<(PieceType, PieceColors), Bitmap> PieceImages = new Dictionary<(PieceType, PieceColors), Bitmap>();
+        public abstract List<Coordinate> GetAvailableMoves(Coordinate source);
 
         public PieceColors Color { get; }
         public PieceType Type { get; }
@@ -22,21 +23,15 @@ namespace Chess
         {
             if (!PieceImages.ContainsKey((Type, Color)))
             {
-                LoadPieceImage();
+                int pieceWidth = ChessPiecesBitmap.Width / NumberOfPieceTypes;
+                int pieceHeight = ChessPiecesBitmap.Height / 2;
+                int x = ((int)Type * pieceWidth);
+                int y = (Color == PieceColors.White) ? 0 : pieceHeight;
+
+                PieceImages[(Type, Color)] = new Bitmap(pieceWidth, pieceHeight);
+                Graphics.FromImage(PieceImages[(Type, Color)]).DrawImage(ChessPiecesBitmap, new Rectangle(0, 0, pieceWidth, pieceWidth), x, y, pieceWidth, pieceHeight, GraphicsUnit.Pixel);
             }
             return PieceImages[(Type, Color)];
-        }
-
-        protected abstract void LoadPieceImage();
-
-        protected Bitmap CropImage(Rectangle cropRect)
-        {
-            Bitmap bmp = new Bitmap(cropRect.Width, cropRect.Height);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                g.DrawImage(ChessPiecesBitmap, new Rectangle(0, 0, bmp.Width, bmp.Height), cropRect, GraphicsUnit.Pixel);
-            }
-            return bmp;
         }
     }
 }

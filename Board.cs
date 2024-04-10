@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime;
 using System.Windows.Forms;
 
 namespace Chess
@@ -10,11 +11,24 @@ namespace Chess
         public int CellSize { get; private set; }
 
         private ALayout Layout { get; set; }
-        private Coordinate lastHoveredCell = Coordinate.GetInstance(0, 0);
+
+        private Coordinate LastHoveredCell;
+
+        private int MouseOverCellX;
+        private int MouseOverCellY;
+        private int _highlightThickness = 2;
 
         public Board()
         {
             this.MouseMove += Board_MouseMove;
+        }
+
+        public void Initialize()
+        {
+            this.DoubleBuffered = true;
+
+            Layout = new ChessLayout();
+            Layout.Initialize(); 
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
@@ -23,24 +37,13 @@ namespace Chess
             int mouseY = e.Y / CellSize;
             Coordinate currentHoveredCell = Coordinate.GetInstance(mouseY, mouseX);
 
-            if (lastHoveredCell != currentHoveredCell)
+
+            if (LastHoveredCell != currentHoveredCell)
             {
-                Console.WriteLine($"Mouse moved from {lastHoveredCell.X},{lastHoveredCell.Y} to {currentHoveredCell.X},{currentHoveredCell.Y}");
-
-                if (Layout.ContainsKey(currentHoveredCell))
-                {
-                    APiece piece = Layout[currentHoveredCell];
-                    Console.WriteLine($"Chess piece at {currentHoveredCell.X},{currentHoveredCell.Y}: {piece.Type} ({piece.Color})");
-                }
-
-                lastHoveredCell = currentHoveredCell;
+                LastHoveredCell = currentHoveredCell;
+                Console.WriteLine($"Mouse moved from {LastHoveredCell.X},{LastHoveredCell.Y} to {currentHoveredCell.X},{currentHoveredCell.Y}");
+                this.Refresh();
             }
-        }
-
-        public void Initialize()
-        {
-            Layout = new ChessLayout();
-            Layout.Initialize();
         }
 
         public void Rescale(int windowWidth, int windowHeight, int menuHeight)
@@ -62,6 +65,8 @@ namespace Chess
 
             DrawSquares(doubleBufferingGraphics);
             DrawLayout(doubleBufferingGraphics);
+            HighlightHoveredOverCell(doubleBufferingGraphics);
+            DrawAvailableMoves(doubleBufferingGraphics);
             e.Graphics.DrawImage(doubleBufferingImage, 0, 0);
         }
 
@@ -83,5 +88,54 @@ namespace Chess
                 g.DrawImage(Layout[c].GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
             }
         }
+
+
+        /*        private void DrawAvailableMoves(Graphics g)
+                {
+                    if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
+                    {
+                        APiece piece = Layout[LastHoveredCell];
+
+                        List<Coordinate> availableDestinations = piece.GetAvailableMoves(LastHoveredCell);
+                        foreach (Coordinate coordinate in availableDestinations)
+                        {
+                            g.FillRectangle(Brushes.Green, coordinate.Y * CellSize, coordinate.X * CellSize, CellSize, CellSize);
+
+                        }
+                    }
+                }*/
+        private void DrawAvailableMoves(Graphics g)
+        {
+            if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
+            {
+                APiece piece = Layout[LastHoveredCell];
+                if (piece != null)
+                {
+                    List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell);
+                    foreach (Coordinate destinationCoordinate in availableMoves)
+                    {
+                        // Use a stronger green color for the highlight pen
+                        Pen highlightPen = new Pen(Color.FromArgb(0, 255, 0), _highlightThickness);
+                        g.DrawRectangle(highlightPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
+
+                        // Draw a rectangle with the same dimensions, but with a lighter green color
+                        highlightPen = new Pen(Color.FromArgb(173, 255, 47), _highlightThickness - 2);
+                        g.DrawRectangle(highlightPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
+                    }
+                }
+            }
+        }
+
+
+
+        private void HighlightHoveredOverCell(Graphics g)
+        {
+            if (LastHoveredCell != null)
+            {
+                Pen highlightPen = new Pen(Brushes.Red, _highlightThickness);
+                g.DrawRectangle(highlightPen, LastHoveredCell.Y * CellSize, LastHoveredCell.X * CellSize, CellSize, CellSize);
+            }
+        }
+
     }
 }

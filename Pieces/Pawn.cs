@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿// Pawn.cs
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Chess
 {
@@ -8,16 +11,32 @@ namespace Chess
         {
         }
 
-        protected override void LoadPieceImage()
+        public override List<Coordinate> GetAvailableMoves(Coordinate source)
         {
-            int pieceWidth = ChessPiecesBitmap.Width / NumColumns;
-            int pieceHeight = ChessPiecesBitmap.Height / 2;
+            List<Coordinate> availableMoves = new List<Coordinate>();
 
-            int x = ((int)Type * pieceWidth);
-            int y = (Color == PieceColors.White) ? 0 : pieceHeight;
+            // Pawn moves forward one square
+            int forwardDirection = (Color == PieceColors.White) ? -1 : 1;
+            int newX = source.X + forwardDirection;
 
-            Rectangle cropRect = new Rectangle(x, y, pieceWidth, pieceHeight);
-            PieceImages[(Type, Color)] = CropImage(cropRect);
+            // Check if the new position is within the bounds of the board
+            if (newX >= 0 && newX < 8)
+            {
+                availableMoves.Add(Coordinate.GetInstance(newX, source.Y));
+            }
+
+            // Add initial double move for pawn
+            if ((Color == PieceColors.White && source.X == 6) || (Color == PieceColors.Black && source.X == 1))
+            {
+                int doubleMoveX = source.X + forwardDirection * 2;
+                if (doubleMoveX >= 0 && doubleMoveX < 8)
+                {
+                    availableMoves.Add(Coordinate.GetInstance(doubleMoveX, source.Y));
+                }
+            }
+
+            return availableMoves;
         }
+
     }
 }
