@@ -87,21 +87,6 @@ namespace Chess
             }
         }
 
-
-        /*        private void DrawAvailableMoves(Graphics g)
-                {
-                    if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
-                    {
-                        APiece piece = Layout[LastHoveredCell];
-
-                        List<Coordinate> availableDestinations = piece.GetAvailableMoves(LastHoveredCell);
-                        foreach (Coordinate coordinate in availableDestinations)
-                        {
-                            g.FillRectangle(Brushes.Green, coordinate.Y * CellSize, coordinate.X * CellSize, CellSize, CellSize);
-
-                        }
-                    }
-                }*/
         private void DrawAvailableMoves(Graphics g)
         {
             if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
@@ -121,8 +106,6 @@ namespace Chess
                 }
             }
         }
-
-
 
         private void HighlightHoveredOverCell(Graphics g)
         {
