@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime;
 using System.Windows.Forms;
 
 namespace Chess
 {
-    public class Board : UserControl
+    public partial class Board : UserControl
     {
         public int CellSize { get; private set; }
 
@@ -14,19 +13,23 @@ namespace Chess
 
         private Coordinate LastHoveredCell;
 
-        private int _highlightThickness = 2;
+        private Pen highlightPen = new Pen(Brushes.Red, 4);
+        private Pen redPen = new Pen(Color.FromArgb(0, 255, 0), 4);
+        private Pen greenPen = new Pen(Color.FromArgb(173, 255, 47), 2);
+
+        // Define the MoveProposed event
+        public event EventHandler<MoveProposedEventArgs> MoveProposed;
 
         public Board()
         {
-            this.MouseMove += Board_MouseMove;
         }
 
         public void Initialize()
         {
             this.DoubleBuffered = true;
-
+            this.MouseMove += Board_MouseMove;
             Layout = new ChessLayout();
-            Layout.Initialize(); 
+            Layout.Initialize();
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
@@ -34,7 +37,6 @@ namespace Chess
             int mouseX = e.X / CellSize;
             int mouseY = e.Y / CellSize;
             Coordinate currentHoveredCell = Coordinate.GetInstance(mouseY, mouseX);
-
 
             if (LastHoveredCell != currentHoveredCell)
             {
@@ -96,12 +98,9 @@ namespace Chess
                 {
                     List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell);
                     foreach (Coordinate destinationCoordinate in availableMoves)
-                    {
-                        Pen highlightPen = new Pen(Color.FromArgb(0, 255, 0), _highlightThickness);
-                        g.DrawRectangle(highlightPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
-
-                        highlightPen = new Pen(Color.FromArgb(173, 255, 47), _highlightThickness - 2);
-                        g.DrawRectangle(highlightPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
+                    { 
+                        g.DrawRectangle(redPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
+                        g.DrawRectangle(greenPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
                     }
                 }
             }
@@ -111,9 +110,24 @@ namespace Chess
         {
             if (LastHoveredCell != null)
             {
-                Pen highlightPen = new Pen(Brushes.Red, _highlightThickness);
                 g.DrawRectangle(highlightPen, LastHoveredCell.Y * CellSize, LastHoveredCell.X * CellSize, CellSize, CellSize);
             }
+        }
+
+        // Event handler for mouse click event
+        protected override void OnMouseClick(MouseEventArgs e)
+        {
+            base.OnMouseClick(e);
+
+            // Calculate the clicked cell's coordinates
+            int clickedX = e.Y / CellSize;
+            int clickedY = e.X / CellSize;
+
+            // Create a Coordinate object for the clicked cell
+            Coordinate clickedCell = Coordinate.GetInstance(clickedX, clickedY);
+
+            // Raise the MoveProposed event with the clicked cell's coordinates
+            MoveProposed?.Invoke(this, new MoveProposedEventArgs(LastHoveredCell, clickedCell));
         }
 
     }

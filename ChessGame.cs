@@ -1,21 +1,45 @@
-﻿using Chess;
+﻿using System;
+using System.Runtime.Remoting.Contexts;
 
-namespace ChessGame
+namespace Chess
 {
-    public class ChessGame : AGame
+    public class ChessGame
     {
-        private Board _board;
+        private Board board;
+        private Referee referee;
+        private Context context;
 
-        public override void Initialize(Board board)
+        public event EventHandler<GameContextChangedEventArgs> GameContextChanged;
+
+        public ChessGame()
         {
-            _board = board;
-            // Additional initialization code if needed
+            Initialize();
         }
 
-        public override void Start()
+        private void Initialize()
         {
-            // Start the chess game logic
-            // For example, initializing game state, setting up players, etc.
+            board = new Board();
+            referee = new Referee();
+            context = new Context();
+
+            board.MoveProposed += OnMoveProposed; // OnMoveProposed MUST be in Referee
+            referee.GameContextChanged += OnGameContextChanged;
+
+            board.Initialize();
+            referee.Initialize();
+        }
+
+        //GameContextChanged (listener should be in Referee)
+        private void OnMoveProposed(object sender, MoveProposedEventArgs e)
+        {
+            // Propagate the move to the referee for validation
+            referee.ValidateMove(e);
+        }
+
+        //This should be moved in Board.cs
+        private void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
+        {
+            GameContextChanged?.Invoke(this, e);
         }
     }
 }
