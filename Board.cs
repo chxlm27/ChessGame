@@ -22,6 +22,7 @@ namespace Chess
 
         public Board()
         {
+            Initialize();
         }
 
         public void Initialize()
@@ -98,7 +99,7 @@ namespace Chess
                 {
                     List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell);
                     foreach (Coordinate destinationCoordinate in availableMoves)
-                    { 
+                    {
                         g.DrawRectangle(redPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
                         g.DrawRectangle(greenPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
                     }
@@ -134,7 +135,5 @@ namespace Chess
             // Raise the MoveProposed event with the Move object
             MoveProposed?.Invoke(this, new MoveProposedEventArgs(move));
         }
-
-
     }
 }

@@ -18,14 +18,18 @@ namespace Chess
         private void Initialize()
         {
             board = new Board();
-            referee = new Referee(); // Create the Referee object
+            referee = new Referee();
             context = new Context();
+
+            // Initialize the layout and set it in the context
+            context.Layout = new ChessLayout();
+            context.Layout.Initialize();
 
             // No need to subscribe to the board's event here
             referee.GameContextChanged += OnGameContextChanged;
 
-            board.Initialize();
-            referee.Initialize(board); // Pass the board object to referee's Initialize method
+            board.Initialize(); // Initialize the board
+            referee.Initialize(board);
         }
 
         private void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
@@ -33,5 +37,4 @@ namespace Chess
             GameContextChanged?.Invoke(this, e);
         }
     }
-
 }
