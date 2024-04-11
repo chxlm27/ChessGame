@@ -1,36 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Drawing.Text;
-
-public class Coordinate
+namespace Chess
 {
-    private static Dictionary<int, Dictionary<int, Coordinate>> _instances;
-
-    public int X { get; }
-    public int Y { get; }
-
-    private Coordinate(int x, int y)
+    public class Coordinate
     {
-        X = x;
-        Y = y;
-    }
+        private static Dictionary<int, Dictionary<int, Coordinate>> _instances;
 
-    public static Coordinate GetInstance(int x, int y)
-    {
-        if (_instances == null)
+        public int X { get; }
+        public int Y { get; }
+
+        private Coordinate(int x, int y)
         {
-            _instances = new Dictionary<int, Dictionary<int, Coordinate>>();
+            X = x;
+            Y = y;
         }
 
-        if (!_instances.ContainsKey(x))
+        public static Coordinate GetInstance(int x, int y)
         {
-            _instances[x] = new Dictionary<int, Coordinate>();
-        }
+            if (_instances == null)
+            {
+                _instances = new Dictionary<int, Dictionary<int, Coordinate>>();
+            }
 
-        if (!_instances[x].ContainsKey(y))
-        {
-            _instances[x][y] = new Coordinate(x, y);
-        }
+            if (!_instances.ContainsKey(x))
+            {
+                _instances[x] = new Dictionary<int, Coordinate>();
+            }
 
-        return _instances[x][y];
+            if (!_instances[x].ContainsKey(y))
+            {
+                _instances[x][y] = new Coordinate(x, y);
+            }
+
+            return _instances[x][y];
+        }
     }
 }

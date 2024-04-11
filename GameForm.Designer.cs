@@ -2,13 +2,14 @@
 using System;
 using System.Windows.Forms;
 
-namespace ChessGame
+namespace Chess
 {
     partial class GameForm : Form
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
+        private ChessGame chessGame; // Instantiate ChessGame
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace ChessGame
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
+            this.chessGame = new ChessGame();
         }
 
         #region Windows Form Designer generated code

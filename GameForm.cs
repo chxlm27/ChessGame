@@ -1,8 +1,8 @@
 ﻿using Chess;
-using System.Windows.Forms;
 using System;
+using System.Windows.Forms;
 
-namespace ChessGame
+namespace Chess
 {
     public partial class GameForm : Form
     {

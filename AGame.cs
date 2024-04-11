@@ -1,6 +1,6 @@
 ﻿using Chess;
 
-namespace ChessGame
+namespace Chess
 {
     public abstract class AGame
     {

@@ -10,6 +10,7 @@ namespace Chess
         public int CellSize { get; private set; }
 
         private ALayout Layout { get; set; }
+        private Referee referee; // Reference to the referee
 
         private Coordinate LastHoveredCell;
 
@@ -31,6 +32,8 @@ namespace Chess
             this.MouseMove += Board_MouseMove;
             Layout = new ChessLayout();
             Layout.Initialize();
+            referee = new Referee(); // Instantiate the referee
+            referee.Initialize(this); // Pass a reference to this board
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
