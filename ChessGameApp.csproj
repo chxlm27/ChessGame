@@ -52,6 +52,7 @@
     <Compile Include="Coordinate.cs" />
     <Compile Include="ChessLayout.cs" />
     <Compile Include="GameContextChangedEventArgs.cs" />
+    <Compile Include="Move.cs" />
     <Compile Include="MoveProposedEventArgs.cs" />
     <Compile Include="Pieces\APiece.cs" />
     <Compile Include="Pieces\Bishop.cs" />

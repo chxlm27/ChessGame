@@ -115,6 +115,7 @@ namespace Chess
         }
 
         // Event handler for mouse click event
+        // Event handler for mouse click event
         protected override void OnMouseClick(MouseEventArgs e)
         {
             base.OnMouseClick(e);
@@ -123,12 +124,17 @@ namespace Chess
             int clickedX = e.Y / CellSize;
             int clickedY = e.X / CellSize;
 
-            // Create a Coordinate object for the clicked cell
-            Coordinate clickedCell = Coordinate.GetInstance(clickedX, clickedY);
+            // Create Coordinate objects for the source and destination cells
+            Coordinate sourceCell = LastHoveredCell;
+            Coordinate destinationCell = Coordinate.GetInstance(clickedX, clickedY);
 
-            // Raise the MoveProposed event with the clicked cell's coordinates
-            MoveProposed?.Invoke(this, new MoveProposedEventArgs(LastHoveredCell, clickedCell));
+            // Create a Move object with source and destination cells
+            Move move = new Move(sourceCell, destinationCell);
+
+            // Raise the MoveProposed event with the Move object
+            MoveProposed?.Invoke(this, new MoveProposedEventArgs(move));
         }
+
 
     }
 }
