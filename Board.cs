@@ -43,12 +43,6 @@ namespace Chess
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDragging)
-            {
-                // Only refresh when dragging to reduce unnecessary redraws
-                this.Refresh();
-            }
-
             int mouseX = e.X / CellSize;
             int mouseY = e.Y / CellSize;
             Coordinate currentHoveredCell = Coordinate.GetInstance(mouseY, mouseX);
@@ -57,6 +51,11 @@ namespace Chess
             {
                 LastHoveredCell = currentHoveredCell;
                 Console.WriteLine($"Mouse moved from {LastHoveredCell.X},{LastHoveredCell.Y} to {currentHoveredCell.X},{currentHoveredCell.Y}");
+                this.Refresh();
+            }
+            if (isDragging)
+            {
+                // Only refresh when dragging to reduce unnecessary redraws
                 this.Refresh();
             }
         }
@@ -82,13 +81,7 @@ namespace Chess
             DrawLayout(doubleBufferingGraphics);
             HighlightHoveredOverCell(doubleBufferingGraphics);
             DrawAvailableMoves(doubleBufferingGraphics);
-
-            // Draw the dragged piece separately if it's being dragged
-            if (isDragging && draggedPiece != null)
-            {
-                DrawDraggedPiece(doubleBufferingGraphics);
-            }
-
+            DrawDraggedPiece(doubleBufferingGraphics); // Draw the dragged piece
             e.Graphics.DrawImage(doubleBufferingImage, 0, 0);
         }
 
@@ -138,7 +131,7 @@ namespace Chess
 
         private void DrawDraggedPiece(Graphics g)
         {
-            if (draggedPiece != null)
+            if (isDragging && draggedPiece != null)
             {
                 // Calculate the position of the dragged piece based on the mouse cursor
                 int mouseX = MousePosition.X - this.Parent.PointToScreen(this.Location).X;
@@ -161,14 +154,20 @@ namespace Chess
 
             if (Layout.ContainsKey(clickedCell))
             {
-                draggedPiece = Layout[clickedCell];
-                originalCell = clickedCell;
+                APiece clickedPiece = Layout[clickedCell];
 
-                // Calculate the offset relative to the top-left corner of the cell
-                offsetX = e.X % CellSize;
-                offsetY = e.Y % CellSize;
+                // Check if the clicked cell has an available piece to move
+                if (clickedPiece != null && clickedPiece.GetAvailableMoves(clickedCell).Count > 0)
+                {
+                    draggedPiece = clickedPiece;
+                    originalCell = clickedCell;
 
-                isDragging = true;
+                    // Calculate the offset relative to the top-left corner of the cell
+                    offsetX = e.X % CellSize;
+                    offsetY = e.Y % CellSize;
+
+                    isDragging = true;
+                }
             }
         }
 
@@ -186,14 +185,19 @@ namespace Chess
                 // Check if the destination cell is valid and empty
                 if (destinationCell != originalCell && Layout.ContainsKey(destinationCell) == false)
                 {
-                    // Remove the piece from the original cell
-                    Layout.Remove(originalCell);
+                    // Check if the destination cell is one of the available moves
+                    List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell);
+                    if (availableMoves.Contains(destinationCell))
+                    {
+                        // Remove the piece from the original cell
+                        Layout.Remove(originalCell);
 
-                    // Update the layout with the moved piece
-                    Layout.Add(destinationCell, draggedPiece);
+                        // Update the layout with the moved piece
+                        Layout.Add(destinationCell, draggedPiece);
 
-                    // Raise the MoveProposed event with the Move object
-                    MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
+                        // Raise the MoveProposed event with the Move object
+                        MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
+                    }
                 }
             }
 
