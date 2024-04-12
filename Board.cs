@@ -11,6 +11,7 @@ namespace Chess
 
         private ALayout Layout { get; set; }
         private Referee Referee; // Reference to the Referee
+        private Context GameContext; // Game context to track the current player
 
         private Coordinate LastHoveredCell;
 
@@ -39,6 +40,8 @@ namespace Chess
             Layout.Initialize();
             Referee = new Referee(); // Instantiate the Referee
             Referee.Initialize(this); // Pass a reference to this board
+            GameContext = new Context(); // Initialize the game context
+            GameContext.CurrentPlayer = PieceColors.White; // Set the initial player to White
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
@@ -147,6 +150,30 @@ namespace Chess
         {
             base.OnMouseDown(e);
 
+            PieceColors? pieceColor = GetPieceColorFromLayout(LastHoveredCell);
+
+            // Check if it's the current player's turn
+            if (GameContext.CurrentPlayer == PieceColors.White && pieceColor == PieceColors.White)
+            {
+                // Player can only move their own pieces
+                ProcessPlayerMove(e);
+            }
+            else if (GameContext.CurrentPlayer == PieceColors.Black && pieceColor == PieceColors.Black)
+            {
+                // Player can only move their own pieces
+                ProcessPlayerMove(e);
+            }
+            else if (GameContext.CurrentPlayer == PieceColors.Black && pieceColor == null)
+            {
+                // If it's black's turn but there's no piece to move, switch to white's turn
+                GameContext.CurrentPlayer = PieceColors.White;
+            }
+        }
+
+
+
+        private void ProcessPlayerMove(MouseEventArgs e)
+        {
             // Check if the mouse is within the bounds of a piece
             int clickedX = e.Y / CellSize;
             int clickedY = e.X / CellSize;
@@ -170,6 +197,7 @@ namespace Chess
                 }
             }
         }
+
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
@@ -197,6 +225,9 @@ namespace Chess
 
                         // Raise the MoveProposed event with the Move object
                         MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
+
+                        // Toggle the current player
+                        GameContext.CurrentPlayer = GameContext.CurrentPlayer == PieceColors.White ? PieceColors.Black : PieceColors.White;
                     }
                 }
             }
@@ -208,5 +239,20 @@ namespace Chess
 
             this.Refresh(); // Redraw the board after dragging is completed
         }
+
+        // Method to get piece color from layout
+        private PieceColors? GetPieceColorFromLayout(Coordinate coordinate)
+        {
+            if (Layout.ContainsKey(coordinate))
+            {
+                APiece piece = Layout[coordinate];
+                if (piece != null)
+                {
+                    return piece.Color;
+                }
+            }
+            return null;
+        }
+
     }
 }

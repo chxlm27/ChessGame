@@ -4,7 +4,7 @@ namespace Chess
 {
     public class Context
     {
-        public PieceColors CurrentPlayer { get; private set; }
+        public PieceColors CurrentPlayer { get; set; }
         public ALayout Layout { get; set; } // Property to hold the layout
         //trebuie sa pun layoutul aici, sa il mut din Board.
         // cand incepe jocul, Referee ul face primul new Context
