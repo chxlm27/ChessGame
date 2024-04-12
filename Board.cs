@@ -23,7 +23,7 @@ namespace Chess
         private Pen highlightPen = new Pen(Brushes.Red, 4);
         private Pen redPen = new Pen(Color.FromArgb(0, 255, 0), 4);
         private Pen greenPen = new Pen(Color.FromArgb(173, 255, 47), 2);
-
+        private PieceColors currentPlayerTurn = PieceColors.Black; // Black moves first
         // Define the MoveProposed event
         public event EventHandler<MoveProposedEventArgs> MoveProposed;
 
@@ -41,7 +41,7 @@ namespace Chess
             Referee = new Referee(); // Instantiate the Referee
             Referee.Initialize(this); // Pass a reference to this board
             GameContext = new Context(); // Initialize the game context
-            GameContext.CurrentPlayer = PieceColors.White; // Set the initial player to White
+            GameContext.CurrentPlayer = PieceColors.Black; // Set the initial player to Black
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
@@ -152,25 +152,12 @@ namespace Chess
 
             PieceColors? pieceColor = GetPieceColorFromLayout(LastHoveredCell);
 
-            // Check if it's the current player's turn
-            if (GameContext.CurrentPlayer == PieceColors.White && pieceColor == PieceColors.White)
+            // Check if it's the current player's turn and if the initial move is made
+            if ((currentPlayerTurn == PieceColors.Black || (currentPlayerTurn == PieceColors.White && pieceColor == PieceColors.White)) && pieceColor == currentPlayerTurn)
             {
-                // Player can only move their own pieces
                 ProcessPlayerMove(e);
-            }
-            else if (GameContext.CurrentPlayer == PieceColors.Black && pieceColor == PieceColors.Black)
-            {
-                // Player can only move their own pieces
-                ProcessPlayerMove(e);
-            }
-            else if (GameContext.CurrentPlayer == PieceColors.Black && pieceColor == null)
-            {
-                // If it's black's turn but there's no piece to move, switch to white's turn
-                GameContext.CurrentPlayer = PieceColors.White;
             }
         }
-
-
 
         private void ProcessPlayerMove(MouseEventArgs e)
         {
@@ -197,7 +184,6 @@ namespace Chess
                 }
             }
         }
-
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
@@ -227,7 +213,7 @@ namespace Chess
                         MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
 
                         // Toggle the current player
-                        GameContext.CurrentPlayer = GameContext.CurrentPlayer == PieceColors.White ? PieceColors.Black : PieceColors.White;
+                        currentPlayerTurn = currentPlayerTurn == PieceColors.White ? PieceColors.Black : PieceColors.White;
                     }
                 }
             }
@@ -253,6 +239,5 @@ namespace Chess
             }
             return null;
         }
-
     }
 }
