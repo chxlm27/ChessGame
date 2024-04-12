@@ -8,11 +8,9 @@ namespace Chess
     public partial class Board : UserControl
     {
         public int CellSize { get; private set; }
-
+        private Dictionary<Coordinate, APiece> pieces;
         private ALayout Layout { get; set; }
-        private Referee Referee; // Reference to the Referee
-        private Context GameContext; // Game context to track the current player
-
+        private Context GameContext;
         private Coordinate LastHoveredCell;
 
         private APiece draggedPiece;
@@ -23,8 +21,7 @@ namespace Chess
         private Pen highlightPen = new Pen(Brushes.Red, 4);
         private Pen redPen = new Pen(Color.FromArgb(0, 255, 0), 4);
         private Pen greenPen = new Pen(Color.FromArgb(173, 255, 47), 2);
-        private PieceColors currentPlayerTurn = PieceColors.Black; // Black moves first
-        // Define the MoveProposed event
+
         public event EventHandler<MoveProposedEventArgs> MoveProposed;
 
         public Board()
@@ -38,10 +35,8 @@ namespace Chess
             this.MouseMove += Board_MouseMove;
             Layout = new ChessLayout();
             Layout.Initialize();
-            Referee = new Referee(); // Instantiate the Referee
-            Referee.Initialize(this); // Pass a reference to this board
-            GameContext = new Context(); // Initialize the game context
-            GameContext.CurrentPlayer = PieceColors.Black; // Set the initial player to Black
+            GameContext = new Context();
+            GameContext.CurrentPlayer = PieceColors.Black;
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
@@ -58,7 +53,6 @@ namespace Chess
             }
             if (isDragging)
             {
-                // Only refresh when dragging to reduce unnecessary redraws
                 this.Refresh();
             }
         }
@@ -84,7 +78,7 @@ namespace Chess
             DrawLayout(doubleBufferingGraphics);
             HighlightHoveredOverCell(doubleBufferingGraphics);
             DrawAvailableMoves(doubleBufferingGraphics);
-            DrawDraggedPiece(doubleBufferingGraphics); // Draw the dragged piece
+            DrawDraggedPiece(doubleBufferingGraphics);
             e.Graphics.DrawImage(doubleBufferingImage, 0, 0);
         }
 
@@ -136,12 +130,8 @@ namespace Chess
         {
             if (isDragging && draggedPiece != null)
             {
-                // Calculate the position of the dragged piece based on the mouse cursor
                 int mouseX = MousePosition.X - this.Parent.PointToScreen(this.Location).X;
                 int mouseY = MousePosition.Y - this.Parent.PointToScreen(this.Location).Y;
-
-                // Calculate the position where the dragged image should be drawn
-                // Correct the calculations to account for offsetX and offsetY
                 g.DrawImage(draggedPiece.GetImage(), mouseX - offsetX, mouseY - offsetY, CellSize, CellSize);
             }
         }
@@ -152,8 +142,7 @@ namespace Chess
 
             PieceColors? pieceColor = GetPieceColorFromLayout(LastHoveredCell);
 
-            // Check if it's the current player's turn and if the initial move is made
-            if ((currentPlayerTurn == PieceColors.Black || (currentPlayerTurn == PieceColors.White && pieceColor == PieceColors.White)) && pieceColor == currentPlayerTurn)
+            if ((GameContext.CurrentPlayer == PieceColors.Black || (GameContext.CurrentPlayer == PieceColors.White && pieceColor == PieceColors.White)) && pieceColor == GameContext.CurrentPlayer)
             {
                 ProcessPlayerMove(e);
             }
@@ -161,7 +150,6 @@ namespace Chess
 
         private void ProcessPlayerMove(MouseEventArgs e)
         {
-            // Check if the mouse is within the bounds of a piece
             int clickedX = e.Y / CellSize;
             int clickedY = e.X / CellSize;
             Coordinate clickedCell = Coordinate.GetInstance(clickedX, clickedY);
@@ -170,16 +158,12 @@ namespace Chess
             {
                 APiece clickedPiece = Layout[clickedCell];
 
-                // Check if the clicked cell has an available piece to move
                 if (clickedPiece != null && clickedPiece.GetAvailableMoves(clickedCell).Count > 0)
                 {
                     draggedPiece = clickedPiece;
                     originalCell = clickedCell;
-
-                    // Calculate the offset relative to the top-left corner of the cell
                     offsetX = e.X % CellSize;
                     offsetY = e.Y % CellSize;
-
                     isDragging = true;
                 }
             }
@@ -191,42 +175,32 @@ namespace Chess
 
             if (isDragging && draggedPiece != null)
             {
-                // Calculate the destination cell
                 int clickedX = e.Y / CellSize;
                 int clickedY = e.X / CellSize;
                 Coordinate destinationCell = Coordinate.GetInstance(clickedX, clickedY);
 
-                // Check if the destination cell is valid and empty
                 if (destinationCell != originalCell && Layout.ContainsKey(destinationCell) == false)
                 {
-                    // Check if the destination cell is one of the available moves
                     List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell);
                     if (availableMoves.Contains(destinationCell))
                     {
-                        // Remove the piece from the original cell
                         Layout.Remove(originalCell);
-
-                        // Update the layout with the moved piece
                         Layout.Add(destinationCell, draggedPiece);
 
-                        // Raise the MoveProposed event with the Move object
                         MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
 
-                        // Toggle the current player
-                        currentPlayerTurn = currentPlayerTurn == PieceColors.White ? PieceColors.Black : PieceColors.White;
+                        GameContext.SwitchPlayer();
                     }
                 }
             }
 
-            // Reset drag variables
             draggedPiece = null;
             originalCell = null;
             isDragging = false;
 
-            this.Refresh(); // Redraw the board after dragging is completed
+            this.Refresh();
         }
 
-        // Method to get piece color from layout
         private PieceColors? GetPieceColorFromLayout(Coordinate coordinate)
         {
             if (Layout.ContainsKey(coordinate))
