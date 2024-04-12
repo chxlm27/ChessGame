@@ -7,8 +7,8 @@ namespace Chess
         public PieceColors CurrentPlayer { get; private set; }
         public ALayout Layout { get; set; } // Property to hold the layout
         //trebuie sa pun layoutul aici, sa il mut din Board.
-        // cand incepe jocul, referee ul face primul new Context
-        // referee.Start() -> game context changed
+        // cand incepe jocul, Referee ul face primul new Context
+        // Referee.Start() -> game context changed
 
         public Context()
         {

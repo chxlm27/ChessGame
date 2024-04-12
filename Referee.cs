@@ -36,7 +36,7 @@ namespace Chess
 
         public void OnMoveProposed(object sender, MoveProposedEventArgs e)
         {
-            // Propagate the move to the referee for validation
+            // Propagate the move to the Referee for validation
             ValidateMove(e);
         }
 

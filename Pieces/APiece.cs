@@ -9,6 +9,7 @@ namespace Chess
         private static readonly int NumberOfPieceTypes = 6;
         private Dictionary<(PieceType, PieceColors), Bitmap> PieceImages = new Dictionary<(PieceType, PieceColors), Bitmap>();
         public abstract List<Coordinate> GetAvailableMoves(Coordinate source);
+        public Point Position { get; set; }
 
         public PieceColors Color { get; }
         public PieceType Type { get; }
