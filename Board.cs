@@ -198,6 +198,7 @@ namespace Chess
             isDragging = false;
         }
 
+
         // Method to check if the move is valid
         private bool IsMoveValid(Move move)
         {
