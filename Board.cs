@@ -43,6 +43,12 @@ namespace Chess
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
         {
+            if (isDragging)
+            {
+                // Only refresh when dragging to reduce unnecessary redraws
+                this.Refresh();
+            }
+
             int mouseX = e.X / CellSize;
             int mouseY = e.Y / CellSize;
             Coordinate currentHoveredCell = Coordinate.GetInstance(mouseY, mouseX);
@@ -76,7 +82,13 @@ namespace Chess
             DrawLayout(doubleBufferingGraphics);
             HighlightHoveredOverCell(doubleBufferingGraphics);
             DrawAvailableMoves(doubleBufferingGraphics);
-            DrawDraggedPiece(doubleBufferingGraphics); // Draw the dragged piece
+
+            // Draw the dragged piece separately if it's being dragged
+            if (isDragging && draggedPiece != null)
+            {
+                DrawDraggedPiece(doubleBufferingGraphics);
+            }
+
             e.Graphics.DrawImage(doubleBufferingImage, 0, 0);
         }
 
@@ -126,16 +138,15 @@ namespace Chess
 
         private void DrawDraggedPiece(Graphics g)
         {
-            if (isDragging && draggedPiece != null)
+            if (draggedPiece != null)
             {
                 // Calculate the position of the dragged piece based on the mouse cursor
                 int mouseX = MousePosition.X - this.Parent.PointToScreen(this.Location).X;
                 int mouseY = MousePosition.Y - this.Parent.PointToScreen(this.Location).Y;
-                int cellX = mouseY / CellSize;
-                int cellY = mouseX / CellSize;
 
-                // Draw the dragged piece centered on the current cell
-                g.DrawImage(draggedPiece.GetImage(), new Rectangle(cellY * CellSize + offsetX, cellX * CellSize + offsetY, CellSize, CellSize));
+                // Calculate the position where the dragged image should be drawn
+                // Correct the calculations to account for offsetX and offsetY
+                g.DrawImage(draggedPiece.GetImage(), mouseX - offsetX, mouseY - offsetY, CellSize, CellSize);
             }
         }
 
@@ -153,9 +164,9 @@ namespace Chess
                 draggedPiece = Layout[clickedCell];
                 originalCell = clickedCell;
 
-                // Calculate the offset relative to the center of the cell
-                offsetX = e.X - ((clickedY * CellSize) + (CellSize / 2));
-                offsetY = e.Y - ((clickedX * CellSize) + (CellSize / 2));
+                // Calculate the offset relative to the top-left corner of the cell
+                offsetX = e.X % CellSize;
+                offsetY = e.Y % CellSize;
 
                 isDragging = true;
             }
@@ -173,22 +184,16 @@ namespace Chess
                 Coordinate destinationCell = Coordinate.GetInstance(clickedX, clickedY);
 
                 // Check if the destination cell is valid and empty
-                if (Layout.ContainsKey(destinationCell) && destinationCell != originalCell)
+                if (destinationCell != originalCell && Layout.ContainsKey(destinationCell) == false)
                 {
-                    // Check if the move is valid (for now, considering all moves valid)
-                    Move proposedMove = new Move(originalCell, destinationCell);
-                    if (IsMoveValid(proposedMove))
-                    {
-                        // Remove the piece from the original cell
-                        Layout.Remove(originalCell);
+                    // Remove the piece from the original cell
+                    Layout.Remove(originalCell);
 
-                        // Update the layout with the moved piece
-                        Layout.Add(destinationCell, draggedPiece);
+                    // Update the layout with the moved piece
+                    Layout.Add(destinationCell, draggedPiece);
 
-                        // Raise the MoveProposed event with the Move object
-                        MoveProposed?.Invoke(this, new MoveProposedEventArgs(proposedMove));
-                        this.Refresh(); // Redraw the board
-                    }
+                    // Raise the MoveProposed event with the Move object
+                    MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
                 }
             }
 
@@ -196,15 +201,8 @@ namespace Chess
             draggedPiece = null;
             originalCell = null;
             isDragging = false;
-        }
 
-
-        // Method to check if the move is valid
-        private bool IsMoveValid(Move move)
-        {
-            // Implement your move validation logic here
-            // You can access source and destination coordinates via move.Source and move.Destination
-            return true; // For now, consider all moves valid
+            this.Refresh(); // Redraw the board after dragging is completed
         }
     }
 }
