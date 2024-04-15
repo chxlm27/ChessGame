@@ -41,6 +41,16 @@ namespace Chess
             Layout.Initialize();
             GameContext = new Context();
             GameContext.CurrentPlayer = PieceColors.Black;
+            referee = new Referee();
+            referee.Initialize(this);
+            referee.GameContextChanged += Referee_GameContextChanged;
+        }
+
+
+        private void Referee_GameContextChanged(object sender, GameContextChangedEventArgs e)
+        {
+            Layout = e.NewContext.Layout; // Update the layout with the new context's layout
+            this.Refresh(); // Refresh the board to reflect the changes
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
@@ -112,7 +122,7 @@ namespace Chess
                 APiece piece = Layout[LastHoveredCell];
                 if (piece != null)
                 {
-                    List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell);
+                    List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell, Layout);
                     foreach (Coordinate destinationCoordinate in availableMoves)
                     {
                         g.DrawRectangle(redPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
@@ -162,7 +172,7 @@ namespace Chess
             {
                 APiece clickedPiece = Layout[clickedCell];
 
-                if (clickedPiece != null && clickedPiece.GetAvailableMoves(clickedCell).Count > 0)
+                if (clickedPiece != null && clickedPiece.GetAvailableMoves(clickedCell, Layout).Count > 0)
                 {
                     draggedPiece = clickedPiece;
                     originalCell = clickedCell;
@@ -172,6 +182,7 @@ namespace Chess
                 }
             }
         }
+
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
@@ -185,7 +196,7 @@ namespace Chess
 
                 if (destinationCell != originalCell && Layout.ContainsKey(destinationCell) == false)
                 {
-                    List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell);
+                    List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell, Layout);
                     if (availableMoves.Contains(destinationCell))
                     {
                         Layout.Remove(originalCell);

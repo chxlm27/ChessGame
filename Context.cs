@@ -1,34 +1,56 @@
-﻿using System;
+﻿using Chess;
 
-namespace Chess
+public class Context
 {
-    public class Context
+    public PieceColors CurrentPlayer { get; set; }
+    public ALayout Layout { get; set; }
+
+    public Context()
     {
-        public PieceColors CurrentPlayer { get; set; }
-        public ALayout Layout { get; set; }
+        CurrentPlayer = PieceColors.White;
+        Layout = new ChessLayout(); // Initialize the layout
+        Layout.Initialize();
+    }
 
-        public Context()
+    public Context Clone()
+    {
+        // Implement deep clone logic here if necessary
+        return new Context
         {
-            CurrentPlayer = PieceColors.White;
+            CurrentPlayer = this.CurrentPlayer,
+            Layout = this.Layout.Clone() // Clone the layout
+        };
+    }
+
+    public void SwitchPlayer()
+    {
+        CurrentPlayer = (CurrentPlayer == PieceColors.White) ? PieceColors.Black : PieceColors.White;
+    }
+
+    public bool IsMoveValid(Coordinate originalCell, Coordinate destinationCell)
+    {
+        if (Layout.ContainsKey(originalCell))
+        {
+            APiece piece = Layout[originalCell];
+            if (piece != null)
+            {
+                return piece.GetAvailableMoves(originalCell, Layout).Contains(destinationCell);
+            }
         }
+        return false;
+    }
 
-        public void SwitchPlayer()
-        {
-            CurrentPlayer = (CurrentPlayer == PieceColors.White) ? PieceColors.Black : PieceColors.White;
-        }
 
-        public bool IsMoveValid(Coordinate originalCell, Coordinate destinationCell)
+    public void MakeMove(Coordinate originalCell, Coordinate destinationCell)
+    {
+        if (Layout.ContainsKey(originalCell))
         {
-            // Implement logic to check if the move is valid based on the current layout
-            // You may need to access the layout and piece-specific logic here
-            // Return true if the move is valid, false otherwise
-            return false;
-        }
-
-        public void MakeMove(Coordinate originalCell, Coordinate destinationCell)
-        {
-            // Implement logic to make the move on the board
-            // This involves updating the layout and any other necessary game state
+            APiece piece = Layout[originalCell];
+            if (piece != null)
+            {
+                Layout.Remove(originalCell);
+                Layout.Add(destinationCell, piece);
+            }
         }
     }
 }

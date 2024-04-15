@@ -9,7 +9,7 @@ namespace Chess
         {
         }
 
-        public override List<Coordinate> GetAvailableMoves(Coordinate source)
+        public override List<Coordinate> GetAvailableMoves(Coordinate source, ALayout layout)
         {
             List<Coordinate> availableMoves = new List<Coordinate>();
 

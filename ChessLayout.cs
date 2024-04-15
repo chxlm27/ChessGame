@@ -8,7 +8,15 @@ namespace Chess
         public ChessLayout() : base()
         {
         }
-
+        public override ALayout Clone()
+        {
+            ChessLayout clone = new ChessLayout();
+            foreach (var kvp in this)
+            {
+                clone.Add(kvp.Key, kvp.Value);
+            }
+            return clone;
+        }
         public override void Initialize()
         {
             this.Add(Coordinate.GetInstance(7, 0), PieceFactory.CreatePiece(PieceType.Rook, PieceColors.Black));

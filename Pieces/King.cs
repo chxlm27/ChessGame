@@ -1,5 +1,4 @@
-﻿// King.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -11,7 +10,7 @@ namespace Chess
         {
         }
 
-        public override List<Coordinate> GetAvailableMoves(Coordinate source) // context de joc
+        public override List<Coordinate> GetAvailableMoves(Coordinate source, ALayout layout)
         {
             List<Coordinate> availableMoves = new List<Coordinate>();
 
