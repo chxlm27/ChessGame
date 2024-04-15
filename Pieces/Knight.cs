@@ -26,7 +26,12 @@ namespace Chess
                 // Check if the new position is within the bounds of the board
                 if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8)
                 {
-                    availableMoves.Add(Coordinate.GetInstance(newX, newY));
+                    // Check if the position is empty or occupied by an opponent's piece
+                    if (!layout.ContainsKey(Coordinate.GetInstance(newX, newY)) ||
+                        layout[Coordinate.GetInstance(newX, newY)].Color != Color)
+                    {
+                        availableMoves.Add(Coordinate.GetInstance(newX, newY));
+                    }
                 }
             }
 

@@ -15,8 +15,10 @@ namespace Chess
             List<Coordinate> availableMoves = new List<Coordinate>();
 
             // Queen moves diagonally, horizontally, and vertically
-            availableMoves.AddRange(GetMovesInDirection(source, 1, 0, layout)); // Vertical
-            availableMoves.AddRange(GetMovesInDirection(source, 0, 1, layout)); // Horizontal
+            availableMoves.AddRange(GetMovesInDirection(source, 1, 0, layout)); // Vertical up
+            availableMoves.AddRange(GetMovesInDirection(source, -1, 0, layout)); // Vertical down
+            availableMoves.AddRange(GetMovesInDirection(source, 0, 1, layout)); // Horizontal right
+            availableMoves.AddRange(GetMovesInDirection(source, 0, -1, layout)); // Horizontal left
             availableMoves.AddRange(GetMovesInDirection(source, 1, 1, layout)); // Diagonal (top-right)
             availableMoves.AddRange(GetMovesInDirection(source, 1, -1, layout)); // Diagonal (top-left)
             availableMoves.AddRange(GetMovesInDirection(source, -1, 1, layout)); // Diagonal (bottom-right)
@@ -32,12 +34,28 @@ namespace Chess
             int newX = source.X + dx;
             int newY = source.Y + dy;
 
-            // Keep moving in the specified direction until the edge of the board is reached or an obstacle is encountered
-            while (newX >= 0 && newX < 8 && newY >= 0 && newY < 8 && (!layout.ContainsKey(Coordinate.GetInstance(newX, newY)) || layout[Coordinate.GetInstance(newX, newY)].Color != this.Color))
+            // Keep moving in the specified direction until the edge of the board is reached
+            while (newX >= 0 && newX < 8 && newY >= 0 && newY < 8)
             {
-                moves.Add(Coordinate.GetInstance(newX, newY));
+                // If the position is empty or contains an opponent's piece, it's a valid move
+                if (!layout.ContainsKey(Coordinate.GetInstance(newX, newY)) ||
+                    layout[Coordinate.GetInstance(newX, newY)].Color != this.Color)
+                {
+                    moves.Add(Coordinate.GetInstance(newX, newY));
+                }
 
-                // Check the next square in the direction
+                // If there is a piece in the current direction, stop adding moves in that direction
+                if (layout.ContainsKey(Coordinate.GetInstance(newX, newY)))
+                {
+                    // If the piece is an opponent's piece, it's still a valid move (to capture)
+                    if (layout[Coordinate.GetInstance(newX, newY)].Color != this.Color)
+                    {
+                        moves.Add(Coordinate.GetInstance(newX, newY));
+                    }
+                    break; // Stop adding moves in this direction
+                }
+
+                // Move to the next square in the direction
                 newX += dx;
                 newY += dy;
             }

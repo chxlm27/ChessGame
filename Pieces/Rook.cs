@@ -31,9 +31,19 @@ namespace Chess
             int newY = source.Y + dy;
 
             // Keep moving in the specified direction until the edge of the board is reached or an obstacle is encountered
-            while (newX >= 0 && newX < 8 && newY >= 0 && newY < 8 && (!layout.ContainsKey(Coordinate.GetInstance(newX, newY)) || layout[Coordinate.GetInstance(newX, newY)].Color != this.Color))
+            while (newX >= 0 && newX < 8 && newY >= 0 && newY < 8)
             {
-                moves.Add(Coordinate.GetInstance(newX, newY));
+                if (!layout.ContainsKey(Coordinate.GetInstance(newX, newY)) ||
+                    layout[Coordinate.GetInstance(newX, newY)].Color != this.Color)
+                {
+                    moves.Add(Coordinate.GetInstance(newX, newY));
+                }
+
+                // If there is a piece in the current direction, stop adding moves in that direction
+                if (layout.ContainsKey(Coordinate.GetInstance(newX, newY)))
+                {
+                    break;
+                }
 
                 // Check the next square in the direction
                 newX += dx;

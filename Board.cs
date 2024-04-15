@@ -18,9 +18,10 @@ namespace Chess
         private int offsetX, offsetY;
         private bool isDragging = false;
 
-        private Pen highlightPen = new Pen(Brushes.Red, 4);
-        private Pen redPen = new Pen(Color.FromArgb(0, 255, 0), 4);
-        private Pen greenPen = new Pen(Color.FromArgb(173, 255, 47), 2);
+        private Pen highlightPen = new Pen(Brushes.Red, 5);
+        private Pen redPen = new Pen(Color.FromArgb(0, 255, 0), 5);
+        private Pen greenPen = new Pen(Color.FromArgb(0, 100, 0), 3);
+
 
         private Referee referee;
 

@@ -6,6 +6,9 @@ namespace Chess
 {
     public class Pawn : APiece
     {
+        // Flag to track whether any pawn has moved yet
+        private static bool hasAnyPawnMoved = false;
+
         public Pawn(PieceColors color) : base(color, PieceType.Pawn)
         {
         }
@@ -19,23 +22,22 @@ namespace Chess
             int newX = source.X + forwardDirection;
 
             // Check if the new position is within the bounds of the board and if the square in front is empty
-            if (newX >= 0 && newX < 8)
+            if (newX >= 0 && newX < 8 && !layout.ContainsKey(Coordinate.GetInstance(newX, source.Y)))
             {
-                // Check if the square in front is empty
-                if (!layout.ContainsKey(Coordinate.GetInstance(newX, source.Y)))
-                {
-                    availableMoves.Add(Coordinate.GetInstance(newX, source.Y));
+                availableMoves.Add(Coordinate.GetInstance(newX, source.Y));
 
-                    // Add initial double move for pawn if the square two squares ahead is also empty
-                    if ((Color == PieceColors.White && source.X == 1) || (Color == PieceColors.Black && source.X == 6))
-                    {
-                        int doubleMoveX = source.X + forwardDirection * 2;
-                        // Check if the squares in front of the pawn are empty for both single and double moves
-                        if (doubleMoveX >= 0 && doubleMoveX < 8 && !layout.ContainsKey(Coordinate.GetInstance(doubleMoveX, source.Y)))
-                        {
-                            availableMoves.Add(Coordinate.GetInstance(doubleMoveX, source.Y));
-                        }
-                    }
+                // If any pawn has moved, all subsequent pawns can only move one square
+                if (hasAnyPawnMoved)
+                {
+                    return availableMoves;
+                }
+
+                // Add initial double move for pawn if the square two squares ahead is also empty
+                int doubleMoveX = source.X + forwardDirection * 2;
+                // Check if the squares in front of the pawn are empty for both single and double moves
+                if (doubleMoveX >= 0 && doubleMoveX < 8 && !layout.ContainsKey(Coordinate.GetInstance(doubleMoveX, source.Y)))
+                {
+                    availableMoves.Add(Coordinate.GetInstance(doubleMoveX, source.Y));
                 }
             }
 
@@ -58,6 +60,12 @@ namespace Chess
             }
 
             return availableMoves;
+        }
+
+        // Method to set the flag when any pawn moves
+        public static void PawnMoved()
+        {
+            hasAnyPawnMoved = true;
         }
     }
 }
