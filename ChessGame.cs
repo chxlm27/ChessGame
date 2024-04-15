@@ -25,7 +25,6 @@ namespace Chess
             context.Layout = new ChessLayout();
             context.Layout.Initialize();
 
-            // No need to subscribe to the board's event here
             referee.GameContextChanged += OnGameContextChanged;
 
             board.Initialize(); // Initialize the board

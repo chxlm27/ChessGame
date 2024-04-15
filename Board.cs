@@ -22,11 +22,15 @@ namespace Chess
         private Pen redPen = new Pen(Color.FromArgb(0, 255, 0), 4);
         private Pen greenPen = new Pen(Color.FromArgb(173, 255, 47), 2);
 
+        private Referee referee;
+
         public event EventHandler<MoveProposedEventArgs> MoveProposed;
 
         public Board()
         {
             Initialize();
+            referee = new Referee();
+            referee.Initialize(this);
         }
 
         public void Initialize()
