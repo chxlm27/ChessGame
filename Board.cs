@@ -121,7 +121,7 @@ namespace Chess
             if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
             {
                 APiece piece = Layout[LastHoveredCell];
-                if (piece != null)
+                if (piece != null && piece.Color == GameContext.CurrentPlayer) // Only show moves for the current player's pieces
                 {
                     List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell, Layout);
                     foreach (Coordinate destinationCoordinate in availableMoves)
@@ -132,6 +132,7 @@ namespace Chess
                 }
             }
         }
+
 
         private void HighlightHoveredOverCell(Graphics g)
         {
