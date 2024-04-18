@@ -1,5 +1,8 @@
-﻿namespace Chess
+﻿using System;
+
+namespace Chess
 {
+    [Serializable]
     public enum PieceType
     {
         Queen = 0,

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing.Text;
 namespace Chess
 {
+    [Serializable]
     public class Coordinate
     {
         private static Dictionary<int, Dictionary<int, Coordinate>> _instances;

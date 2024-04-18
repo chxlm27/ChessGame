@@ -2,13 +2,14 @@
 
 namespace Chess
 {
+    [Serializable]
     public class GameContextChangedEventArgs : EventArgs
     {
-        public Context NewContext { get; }
+        public Context Context { get; }
 
-        public GameContextChangedEventArgs(Context newContext)
+        public GameContextChangedEventArgs(Context context)
         {
-            NewContext = newContext;
+            Context = context;
         }
     }
 }

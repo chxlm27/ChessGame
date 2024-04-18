@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chess;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -7,52 +8,80 @@ namespace Chess
 {
     public partial class Board : UserControl
     {
-        public int CellSize { get; private set; }
-        private Dictionary<Coordinate, APiece> pieces;
-        private ALayout Layout { get; set; }
-        private Context GameContext;
+        /*        public int CellSize { get; private set; }
+                private Dictionary<Coordinate, APiece> pieces;
+                private Context GameContext { get; set; }
+                private Coordinate LastHoveredCell;
+
+                private APiece draggedPiece;
+                private Coordinate originalCell;
+                private int offsetX, offsetY;
+                private bool isDragging = false;
+
+                private Pen highlightPen = new Pen(Brushes.Red, 5);
+                private Pen redPen = new Pen(Color.FromArgb(0, 255, 0), 5);
+                private Pen greenPen = new Pen(Color.FromArgb(0, 100, 0), 3);
+
+                public event EventHandler<MoveProposedEventArgs> MoveProposed;
+
+                public Board()
+                {
+                }
+
+                public void Initialize()
+                {
+                    this.DoubleBuffered = true;
+                    this.MouseMove += Board_MouseMove;
+                    Layout = new ChessLayout();
+                    Layout.Initialize();
+                    GameContext = new Context();
+                    GameContext.CurrentPlayer = PieceColors.Black;
+                    referee = new Referee();
+                    referee.Initialize(this);
+                    referee.GameContextChanged += Referee_GameContextChanged;
+                }
+        */
+        private int _cellSize = 80;
+        private int _mouseOverCellX = 8;
+        private int _mouseOverCellY = 8;
+        private const int _highlightThickness = 6;
         private Coordinate LastHoveredCell;
-
-        private APiece draggedPiece;
-        private Coordinate originalCell;
-        private int offsetX, offsetY;
         private bool isDragging = false;
-
-        private Pen highlightPen = new Pen(Brushes.Red, 5);
-        private Pen redPen = new Pen(Color.FromArgb(0, 255, 0), 5);
-        private Pen greenPen = new Pen(Color.FromArgb(0, 100, 0), 3);
-
-
-        private Referee referee;
-
-        public event EventHandler<MoveProposedEventArgs> MoveProposed;
-
-        public Board()
+        public int CellSize
         {
-            Initialize();
-            referee = new Referee();
-            referee.Initialize(this);
+            get { return _cellSize; }
+            set { _cellSize = value; }
         }
-
+        public int MouseOverCellX
+        {
+            get { return _mouseOverCellX; }
+            private set { _mouseOverCellX = value; }
+        }
+        public int MouseOverCellY
+        {
+            get { return _mouseOverCellY; }
+            private set { _mouseOverCellY = value; }
+        }
+        public Coordinate DraggedCoordinate { get; set; }
+        public Coordinate TargetCoordinate { get; set; }
+        private Context CurrentContext { get; set; }
+        public event MoveProposedHandler MoveProposed;
+        public delegate void MoveProposedHandler(object sender, MoveProposedEventArgs e);
         public void Initialize()
         {
-            this.DoubleBuffered = true;
-            this.MouseMove += Board_MouseMove;
-            Layout = new ChessLayout();
-            Layout.Initialize();
-            GameContext = new Context();
-            GameContext.CurrentPlayer = PieceColors.Black;
-            referee = new Referee();
-            referee.Initialize(this);
-            referee.GameContextChanged += Referee_GameContextChanged;
+            this.Refresh();
         }
-
-
-        private void Referee_GameContextChanged(object sender, GameContextChangedEventArgs e)
+        public void Referee_GameContextChanged(object sender, GameContextChangedEventArgs e)
         {
-            Layout = e.NewContext.Layout; // Update the layout with the new context's layout
-            this.Refresh(); // Refresh the board to reflect the changes
+            this.CurrentContext = e.Context.Clone();
+            this.Refresh();
         }
+
+        /*private void Referee_GameContextChanged(object sender, GameContextChangedEventArgs e)
+                {
+                    Layout = e.NewContext.Layout; // Update the layout with the new context's layout
+                    this.Refresh(); // Refresh the board to reflect the changes
+                }*/
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
         {
@@ -84,16 +113,28 @@ namespace Chess
             this.Refresh();
         }
 
+        /*        protected override void OnPaint(PaintEventArgs e)
+                {
+                    Bitmap doubleBufferingImage = new Bitmap(CellSize * 8, CellSize * 8);
+                    Graphics doubleBufferingGraphics = Graphics.FromImage(doubleBufferingImage);
+
+                    DrawSquares(doubleBufferingGraphics);
+                    DrawLayout(doubleBufferingGraphics);
+                    HighlightHoveredOverCell(doubleBufferingGraphics);
+                    DrawAvailableMoves(doubleBufferingGraphics);
+                    e.Graphics.DrawImage(doubleBufferingImage, 0, 0);
+                }*/
         protected override void OnPaint(PaintEventArgs e)
         {
             Bitmap doubleBufferingImage = new Bitmap(CellSize * 8, CellSize * 8);
             Graphics doubleBufferingGraphics = Graphics.FromImage(doubleBufferingImage);
-
             DrawSquares(doubleBufferingGraphics);
-            DrawLayout(doubleBufferingGraphics);
-            HighlightHoveredOverCell(doubleBufferingGraphics);
-            DrawAvailableMoves(doubleBufferingGraphics);
-            DrawDraggedPiece(doubleBufferingGraphics);
+            if (CurrentContext != null && CurrentContext.Layout != null) // Update to use Layout property
+            {
+                DrawLayout(doubleBufferingGraphics);
+                HighlightHoveredOverCell(doubleBufferingGraphics);
+                DrawAvailableMoves(doubleBufferingGraphics);
+            }
             e.Graphics.DrawImage(doubleBufferingImage, 0, 0);
         }
 
@@ -116,29 +157,61 @@ namespace Chess
             }
         }
 
+        /*        private void DrawAvailableMoves(Graphics g)
+                {
+                    if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
+                    {
+                        APiece piece = Layout[LastHoveredCell];
+                        if (piece != null && piece.Color == GameContext.CurrentPlayer) // Only show moves for the current player's pieces
+                        {
+                            List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell, Layout);
+                            foreach (Coordinate destinationCoordinate in availableMoves)
+                            {
+                                g.DrawRectangle(redPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
+                                g.DrawRectangle(greenPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
+                            }
+                        }
+                    }
+                }*/
         private void DrawAvailableMoves(Graphics g)
         {
-            if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
+            if (DraggedCoordinate != null)
             {
-                APiece piece = Layout[LastHoveredCell];
-                if (piece != null && piece.Color == GameContext.CurrentPlayer) // Only show moves for the current player's pieces
+                return;
+            }
+            Coordinate sourceCoordinate = sourceCoordinate.GetInstance(MouseOverCellX, MouseOverCellY);
+            if (CurrentContext.Layout.ContainsKey(sourceCoordinate))
+            {
+                APiece piece = CurrentContext.Layout[sourceCoordinate];
+                if (piece != null)
                 {
-                    List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell, Layout);
-                    foreach (Coordinate destinationCoordinate in availableMoves)
+                    List<Coordinate> availableMoves = piece.GetAvailableMoves(sourceCoordinate, CurrentContext);
+                    foreach (Coordinate c in availableMoves)
                     {
-                        g.DrawRectangle(redPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
-                        g.DrawRectangle(greenPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
+                        Pen highlightPen = new Pen(Brushes.OrangeRed, _highlightThickness);
+                        g.DrawRectangle(highlightPen, c.X * CellSize, c.Y * CellSize, CellSize, CellSize);
+
+                        highlightPen = new Pen(Brushes.Yellow, _highlightThickness - 2);
+                        g.DrawRectangle(highlightPen, c.X * CellSize, c.Y * CellSize, CellSize, CellSize);
                     }
                 }
             }
         }
 
 
+        /*   private void HighlightHoveredOverCell(Graphics g)
+           {
+               if (LastHoveredCell != null)
+               {
+                   g.DrawRectangle(highlightPen, LastHoveredCell.Y * CellSize, LastHoveredCell.X * CellSize, CellSize, CellSize);
+               }
+           }*/
         private void HighlightHoveredOverCell(Graphics g)
         {
-            if (LastHoveredCell != null)
+            if (MouseOverCellX >= 0 && MouseOverCellX <= 7 && MouseOverCellY >= 0 && MouseOverCellY <= 7)
             {
-                g.DrawRectangle(highlightPen, LastHoveredCell.Y * CellSize, LastHoveredCell.X * CellSize, CellSize, CellSize);
+                Pen highlightPen = new Pen(Brushes.Red, _highlightThickness);
+                g.DrawRectangle(highlightPen, MouseOverCellX * CellSize, MouseOverCellY * CellSize, CellSize, CellSize);
             }
         }
 
@@ -151,19 +224,6 @@ namespace Chess
                 g.DrawImage(draggedPiece.GetImage(), mouseX - offsetX, mouseY - offsetY, CellSize, CellSize);
             }
         }
-
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            base.OnMouseDown(e);
-
-            PieceColors? pieceColor = GetPieceColorFromLayout(LastHoveredCell);
-
-            if ((GameContext.CurrentPlayer == PieceColors.Black || (GameContext.CurrentPlayer == PieceColors.White && pieceColor == PieceColors.White)) && pieceColor == GameContext.CurrentPlayer)
-            {
-                ProcessPlayerMove(e);
-            }
-        }
-
         private void ProcessPlayerMove(MouseEventArgs e)
         {
             int clickedX = e.Y / CellSize;
@@ -185,37 +245,53 @@ namespace Chess
             }
         }
 
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            var clickedX = e.X / CellSize;
+            var clickedY = e.Y / CellSize;
+
+            DraggedCoordinate = Coordinate.GetInstance(clickedX, clickedY);
+
+            if (e.Button == MouseButtons.Left && CurrentContext.Layout.ContainsKey(DraggedCoordinate))
+            {
+                APiece selectedPiece = CurrentContext.Layout[DraggedCoordinate];
+                Bitmap cursorBitmap = new Bitmap(CellSize, CellSize);
+                Graphics cursorGraphics = Graphics.FromImage(cursorBitmap);
+                cursorGraphics.DrawImage(selectedPiece.GetImage(), 0, 0, CellSize, CellSize);
+                Cursor.Current = new Cursor(cursorBitmap.GetHicon());
+                this.CurrentContext.Layout.Remove(DraggedCoordinate);
+                this.Refresh();
+            }
+            else
+            {
+                DraggedCoordinate = null;
+            }
+
+        }
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
-
-            if (isDragging && draggedPiece != null)
+            var clickedX = e.X / CellSize;
+            var clickedY = e.Y / CellSize;
+            TargetCoordinate = Coordinate.GetCoordinate(clickedX, clickedY);
+            if (e.Button == MouseButtons.Left && DraggedCoordinate != null)
             {
-                int clickedX = e.Y / CellSize;
-                int clickedY = e.X / CellSize;
-                Coordinate destinationCell = Coordinate.GetInstance(clickedX, clickedY);
-
-                if (destinationCell != originalCell && Layout.ContainsKey(destinationCell) == false)
+                Cursor.Current = Cursors.Default;
+                Move proposedMove = new Move();
+                proposedMove.Source = DraggedCoordinate;
+                proposedMove.Target = TargetCoordinate;
+                MoveProposedEventArgs me = new MoveProposedEventArgs();
+                me.ProposedMove = proposedMove;
+                if (MoveProposed != null)
                 {
-                    List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell, Layout);
-                    if (availableMoves.Contains(destinationCell))
-                    {
-                        Layout.Remove(originalCell);
-                        Layout.Add(destinationCell, draggedPiece);
-
-                        MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
-
-                        GameContext.SwitchPlayer();
-                    }
+                    MoveProposed(this, me);
                 }
+                DraggedCoordinate = null;
+                TargetCoordinate = null;
+                this.Refresh();
             }
-
-            draggedPiece = null;
-            originalCell = null;
-            isDragging = false;
-
-            this.Refresh();
         }
 
         private PieceColors? GetPieceColorFromLayout(Coordinate coordinate)
@@ -229,6 +305,10 @@ namespace Chess
                 }
             }
             return null;
+        }
+        public void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
+        {
+            GameContextChanged?.Invoke(this, e);
         }
     }
 }

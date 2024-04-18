@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Chess
@@ -9,8 +10,6 @@ namespace Chess
         private static readonly int NumberOfPieceTypes = 6;
         private Dictionary<(PieceType, PieceColors), Bitmap> PieceImages = new Dictionary<(PieceType, PieceColors), Bitmap>();
         public abstract List<Coordinate> GetAvailableMoves(Coordinate source, ALayout layout);
-        public Point Position { get; set; }
-
         public PieceColors Color { get; }
         public PieceType Type { get; }
 

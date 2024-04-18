@@ -2,36 +2,42 @@
 
 namespace Chess
 {
+    [Serializable]
     public class ChessGame
     {
         private Board board;
         private Referee referee;
-        private Context context;
 
         public event EventHandler<GameContextChangedEventArgs> GameContextChanged;
 
         public ChessGame()
         {
-            Initialize();
         }
 
-        private void Initialize()
+        public void Initialize(Board board)
         {
-            board = new Board();
+            this.board = board;
             referee = new Referee();
-            context = new Context();
 
-            // Initialize the layout and set it in the context
-            context.Layout = new ChessLayout();
-            context.Layout.Initialize();
+            referee.GameContextChanged += board.OnGameContextChanged;
 
-            referee.GameContextChanged += OnGameContextChanged;
-
-            board.Initialize(); // Initialize the board
+            board.Initialize();
             referee.Initialize(board);
         }
 
-        private void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
+        public Board GetBoard()
+        {
+            return board;
+        }
+
+        public void SaveGame()
+        {
+        }
+
+        public void LoadGame()
+        {
+        }
+        private void OnRefereeGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
             GameContextChanged?.Invoke(this, e);
         }

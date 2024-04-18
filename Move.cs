@@ -1,4 +1,6 @@
-﻿namespace Chess
+﻿using System;
+
+namespace Chess
 {
     public class Move
     {

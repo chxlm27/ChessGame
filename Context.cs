@@ -1,55 +1,47 @@
 ﻿using Chess;
+using System;
 
-public class Context
+namespace Chess
 {
-    public PieceColors CurrentPlayer { get; set; }
-    public ALayout Layout { get; set; }
-
-    public Context()
+    [Serializable]
+    public class Context
     {
-        CurrentPlayer = PieceColors.White;
-        Layout = new ChessLayout(); // Initialize the layout
-        Layout.Initialize();
-    }
 
-    public Context Clone()
-    {
-        // Implement deep clone logic here if necessary
-        return new Context
+        public PieceColors CurrentPlayer { get; set; }
+        public ALayout Layout { get; set; }
+
+        public Context()
         {
-            CurrentPlayer = this.CurrentPlayer,
-            Layout = this.Layout.Clone() // Clone the layout
-        };
-    }
-
-    public void SwitchPlayer()
-    {
-        CurrentPlayer = (CurrentPlayer == PieceColors.White) ? PieceColors.Black : PieceColors.White;
-    }
-
-    public bool IsMoveValid(Coordinate originalCell, Coordinate destinationCell)
-    {
-        if (Layout.ContainsKey(originalCell))
-        {
-            APiece piece = Layout[originalCell];
-            if (piece != null)
-            {
-                return piece.GetAvailableMoves(originalCell, Layout).Contains(destinationCell);
-            }
+            CurrentPlayer = PieceColors.White;
+            Layout = new ChessLayout(); // Initialize the layout
+            Layout.Initialize();
         }
-        return false;
-    }
 
-
-    public void MakeMove(Coordinate originalCell, Coordinate destinationCell)
-    {
-        if (Layout.ContainsKey(originalCell))
+        public Context Clone()
         {
-            APiece piece = Layout[originalCell];
-            if (piece != null)
+            // Implement deep clone logic here if necessary
+            return new Context
             {
-                Layout.Remove(originalCell);
-                Layout.Add(destinationCell, piece);
+                CurrentPlayer = this.CurrentPlayer,
+                Layout = this.Layout.Clone() // Clone the layout
+            };
+        }
+
+        public void SwitchPlayer()
+        {
+            CurrentPlayer = (CurrentPlayer == PieceColors.White) ? PieceColors.Black : PieceColors.White;
+        }
+
+        public void MakeMove(Coordinate originalCell, Coordinate destinationCell)
+        {
+            if (Layout.ContainsKey(originalCell))
+            {
+                APiece piece = Layout[originalCell];
+                if (piece != null)
+                {
+                    Layout.Remove(originalCell);
+                    Layout.Add(destinationCell, piece);
+                }
             }
         }
     }

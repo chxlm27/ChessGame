@@ -63,6 +63,7 @@ namespace Chess
         }
 
         // Method to set the flag when any pawn moves
+        // fara metoda asta
         public static void PawnMoved()
         {
             hasAnyPawnMoved = true;

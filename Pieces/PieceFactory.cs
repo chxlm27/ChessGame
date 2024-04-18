@@ -2,6 +2,7 @@
 
 namespace Chess
 {
+    [Serializable]
     public class PieceFactory
     {
         public static APiece CreatePiece(PieceType type, PieceColors color)

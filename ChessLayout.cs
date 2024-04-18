@@ -8,15 +8,7 @@ namespace Chess
         public ChessLayout() : base()
         {
         }
-        public override ALayout Clone()
-        {
-            ChessLayout clone = new ChessLayout();
-            foreach (var kvp in this)
-            {
-                clone.Add(kvp.Key, kvp.Value);
-            }
-            return clone;
-        }
+
         public override void Initialize()
         {
             this.Add(Coordinate.GetInstance(7, 0), PieceFactory.CreatePiece(PieceType.Rook, PieceColors.Black));
@@ -42,6 +34,16 @@ namespace Chess
             this.Add(Coordinate.GetInstance(0, 5), PieceFactory.CreatePiece(PieceType.Bishop, PieceColors.White));
             this.Add(Coordinate.GetInstance(0, 6), PieceFactory.CreatePiece(PieceType.Knight, PieceColors.White));
             this.Add(Coordinate.GetInstance(0, 7), PieceFactory.CreatePiece(PieceType.Rook, PieceColors.White));
+        }
+
+        public override ALayout Clone()
+        {
+            ChessLayout clone = new ChessLayout();
+            foreach (var kvp in this)
+            {
+                clone.Add(kvp.Key, kvp.Value);
+            }
+            return clone;
         }
     }
 }
