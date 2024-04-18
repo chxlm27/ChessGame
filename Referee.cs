@@ -6,13 +6,12 @@ namespace Chess
     {
         private Context context;
         private Board board; // Reference to the board
-        private ALayout layout; // Ensure it's initialized
+        public ALayout Layout { get; set; }
 
         public event EventHandler<GameContextChangedEventArgs> GameContextChanged;
 
         public Referee()
         {
-            layout = new ChessLayout(); // Initialize the layout
         }
 
         public void Initialize(Board board)
@@ -22,14 +21,9 @@ namespace Chess
             board.MoveProposed += OnMoveProposed;
         }
 
-        public void InitializeLayout(ALayout layout)
-        {
-            this.layout = layout;
-        }
-
         public void ValidateMove(Move move)
         {
-            if (layout != null && context.IsMoveValid(move.Source, move.Destination))
+            if (context.IsValid(move.Source, move.Destination))
             {
                 context.MakeMove(move.Source, move.Destination);
                 OnGameContextChanged(new GameContextChangedEventArgs(context.Clone()));

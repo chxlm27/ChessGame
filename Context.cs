@@ -27,7 +27,7 @@ public class Context
         CurrentPlayer = (CurrentPlayer == PieceColors.White) ? PieceColors.Black : PieceColors.White;
     }
 
-    public bool IsMoveValid(Coordinate originalCell, Coordinate destinationCell)
+    public bool IsValid(Coordinate originalCell, Coordinate destinationCell)
     {
         if (Layout.ContainsKey(originalCell))
         {
@@ -39,7 +39,6 @@ public class Context
         }
         return false;
     }
-
 
     public void MakeMove(Coordinate originalCell, Coordinate destinationCell)
     {
