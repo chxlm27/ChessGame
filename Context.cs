@@ -27,19 +27,6 @@ public class Context
         CurrentPlayer = (CurrentPlayer == PieceColors.White) ? PieceColors.Black : PieceColors.White;
     }
 
-    public bool IsValid(Coordinate originalCell, Coordinate destinationCell)
-    {
-        if (Layout.ContainsKey(originalCell))
-        {
-            APiece piece = Layout[originalCell];
-            if (piece != null)
-            {
-                return piece.GetAvailableMoves(originalCell, Layout).Contains(destinationCell);
-            }
-        }
-        return false;
-    }
-
     public void MakeMove(Coordinate originalCell, Coordinate destinationCell)
     {
         if (Layout.ContainsKey(originalCell))
