@@ -218,6 +218,7 @@ namespace Chess
             this.Refresh();
         }
 
+
         private PieceColors? GetPieceColorFromLayout(Coordinate coordinate)
         {
             if (Layout.ContainsKey(coordinate))
