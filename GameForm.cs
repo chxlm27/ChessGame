@@ -19,22 +19,21 @@ namespace Chess
             var board = Game?.GetBoard();
             board?.Rescale(this.Width, this.Height, menuStrip1.Height);
         }
-
         private void beginToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Game == null)
+            Board board = Game?.GetBoard();
+
+            if (board == null)
             {
-                Game = new ChessGame();
-                Board board = new Board(); // Instantiate Board here
+                board = new Board();
                 board.Initialize();
-                Game.Initialize(board); // Pass the instantiated Board to ChessGame
-                Controls.Add(board); // Add board to controls list
+                Game = new ChessGame();
+                Game.Initialize(board);
+                Controls.Add(board);
             }
 
-            Game.GetBoard()?.Rescale(this.Width, this.Height, menuStrip1.Height);
+            board.Rescale(this.Width, this.Height, menuStrip1.Height);
         }
-
-
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
