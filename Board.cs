@@ -231,5 +231,10 @@ namespace Chess
             }
             return null;
         }
+        public void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
+        {
+            Layout = e.NewContext.Layout;
+            this.Refresh();
+        }
     }
 }
