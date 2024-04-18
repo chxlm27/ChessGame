@@ -14,9 +14,9 @@ namespace Chess
         {
         }
 
-        public void Initialize(Board board)
+        public void Initialize(Board _board)
         {
-            this.board = board;
+            board = _board;
             referee = new Referee();
 
             referee.GameContextChanged += board.OnGameContextChanged;
@@ -37,6 +37,7 @@ namespace Chess
         public void LoadGame()
         {
         }
+
         private void OnRefereeGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
             GameContextChanged?.Invoke(this, e);
