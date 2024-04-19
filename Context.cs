@@ -35,8 +35,15 @@ public class Context
             if (piece != null)
             {
                 Layout.Remove(originalCell);
+
+                if (Layout.ContainsKey(destinationCell))
+                {
+                    Layout.Remove(destinationCell);
+                }
+
                 Layout.Add(destinationCell, piece);
             }
         }
     }
+
 }

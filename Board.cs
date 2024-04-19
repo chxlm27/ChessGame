@@ -176,7 +176,6 @@ namespace Chess
             }
         }
 
-
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
@@ -192,10 +191,14 @@ namespace Chess
                     List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell, Layout);
                     if (availableMoves.Contains(destinationCell))
                     {
+                        if (Layout.ContainsKey(destinationCell))
+                        {
+                            Layout.Remove(destinationCell);
+                        }
+
                         Layout.Remove(originalCell);
-                        if(destinationCell!=null) //sa dau erase daca exista deja ceva aici
                         Layout.Add(destinationCell, draggedPiece);
-                        
+
                         MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
 
                         GameContext.SwitchPlayer();
@@ -209,7 +212,6 @@ namespace Chess
 
             this.Refresh();
         }
-
 
         private PieceColors? GetPieceColorFromLayout(Coordinate coordinate)
         {
