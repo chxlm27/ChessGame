@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adapters\AdapterBase.cs" />
+    <Compile Include="Adapters\BoardAdapter.cs" />
     <Compile Include="Adapters\ChessGameAdapter.cs" />
     <Compile Include="Adapters\ChessLayoutAdapter.cs" />
     <Compile Include="Adapters\ContextAdapter.cs" />

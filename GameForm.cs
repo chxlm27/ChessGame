@@ -8,7 +8,7 @@ namespace Chess
     {
         private ChessGame Game { get; set; }
         private Board Board { get; set; }
-        
+
         public GameForm()
         {
             InitializeComponent();
@@ -41,13 +41,26 @@ namespace Chess
 
         private void saveGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Game?.Save();
+            if (Game != null)
+            {
+                Game.Save();
+            }
+            else
+            {
+                MessageBox.Show("No game initialized to save.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Game?.Load();
+            if (Game != null)
+            {
+                Game.Load();
+            }
+            else
+            {
+                MessageBox.Show("No game initialized to load.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-
     }
 }
