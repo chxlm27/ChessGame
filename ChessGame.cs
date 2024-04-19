@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Chess
 {
@@ -30,11 +32,37 @@ namespace Chess
 
         public override void Save()
         {
+            string saveFilePath = GetSaveFilePath();
+            using (FileStream fileStream = new FileStream(saveFilePath, FileMode.Create))
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(fileStream, this);
+            }
         }
 
         public override void Load()
         {
+            string saveFilePath = GetSaveFilePath();
+            if (File.Exists(saveFilePath))
+            {
+                using (FileStream fileStream = new FileStream(saveFilePath, FileMode.Open))
+                {
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    ChessGame loadedGame = (ChessGame)formatter.Deserialize(fileStream);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No saved game found.");
+            }
         }
+
+        private string GetSaveFilePath()
+        {
+            string currentDirectory = Directory.GetCurrentDirectory();
+            return Path.Combine(currentDirectory, "saved_game.game");
+        }
+
 
         public override void Start()
         {

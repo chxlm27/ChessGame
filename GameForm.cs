@@ -41,18 +41,13 @@ namespace Chess
 
         private void saveGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            chessGame?.Save();
+            Game?.Save();
         }
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            chessGame?.Load();
+            Game?.Load();
         }
 
-        private string GetSaveFilePath()
-        {
-            string currentDirectory = Directory.GetCurrentDirectory();
-            return Path.Combine(currentDirectory, "saved_game.dat");
-        }
     }
 }
