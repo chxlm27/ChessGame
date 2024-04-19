@@ -31,7 +31,7 @@ namespace Chess
             Controls.Add(Board);
             Board.Rescale(this.Width, this.Height, menuStrip1.Height);
 
-            //Game.Start()
+            Game.Start();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -41,12 +41,12 @@ namespace Chess
 
         private void saveGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            chessGame?.SaveGame();
+            chessGame?.Save();
         }
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            chessGame?.LoadGame();
+            chessGame?.Load();
         }
 
         private string GetSaveFilePath()

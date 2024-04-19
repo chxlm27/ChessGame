@@ -46,6 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\AdapterBase.cs" />
+    <Compile Include="Adapters\ChessGameAdapter.cs" />
+    <Compile Include="Adapters\ChessLayoutAdapter.cs" />
+    <Compile Include="Adapters\ContextAdapter.cs" />
     <Compile Include="AGame.cs" />
     <Compile Include="ALayout.cs" />
     <Compile Include="Context.cs" />
@@ -107,8 +111,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Adapters\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

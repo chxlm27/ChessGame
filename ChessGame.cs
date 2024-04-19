@@ -3,7 +3,7 @@
 namespace Chess
 {
     [Serializable]
-    public class ChessGame
+    public class ChessGame : AGame
     {
         private Board board;
         private Referee referee;
@@ -14,7 +14,7 @@ namespace Chess
         {
         }
 
-        public void Initialize(Board _board)
+        public override void Initialize(Board _board)
         {
             board = _board;
             referee = new Referee();
@@ -27,11 +27,16 @@ namespace Chess
 
         }
 
-        public void SaveGame()
+
+        public override void Save()
         {
         }
 
-        public void LoadGame()
+        public override void Load()
+        {
+        }
+
+        public override void Start()
         {
         }
 
