@@ -27,7 +27,7 @@ public class Context
         CurrentPlayer = (CurrentPlayer == PieceColors.White) ? PieceColors.Black : PieceColors.White;
     }
 
-    public void MakeMove(Coordinate originalCell, Coordinate destinationCell)
+    public void Move(Coordinate originalCell, Coordinate destinationCell)
     {
         if (Layout.ContainsKey(originalCell))
         {

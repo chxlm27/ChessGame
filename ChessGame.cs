@@ -19,15 +19,12 @@ namespace Chess
             board = _board;
             referee = new Referee();
 
+            board.Initialize();
+            referee.Initialize();
+
+            board.MoveProposed += referee.OnMoveProposed;
             referee.GameContextChanged += board.OnGameContextChanged;
 
-            board.Initialize();
-            referee.Initialize(board);
-        }
-
-        public Board GetBoard()
-        {
-            return board;
         }
 
         public void SaveGame()

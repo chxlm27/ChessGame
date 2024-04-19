@@ -4,9 +4,7 @@ namespace Chess
 {
     public class Referee
     {
-        private Context context;
-        private Board board; // Reference to the board
-        public ALayout Layout { get; set; }
+        private Context Context { get; set; }
 
         public event EventHandler<GameContextChangedEventArgs> GameContextChanged;
 
@@ -14,41 +12,34 @@ namespace Chess
         {
         }
 
-        public void Initialize(Board board)
+        public void Initialize()
         {
-            this.board = board; // Initialize the board reference
-            context = new Context();
-            board.MoveProposed += OnMoveProposed;
-            Layout = new ChessLayout(); // Initialize the layout
+            Context = new Context();
+            ALayout Layout = new ChessLayout();
             Layout.Initialize();
-        }
-
-        public void ValidateMove(Move move)
-        {
-            if (IsValid(move.Source, move.Destination))
-            {
-                context.MakeMove(move.Source, move.Destination);
-                OnGameContextChanged(new GameContextChangedEventArgs(context.Clone()));
-            }
-            // If the move is not valid, you may handle this case as needed
+            Context.Layout = Layout;
         }
 
         public bool IsValid(Coordinate originalCell, Coordinate destinationCell)
         {
-            if (Layout.ContainsKey(originalCell))
+            if (Context.Layout.ContainsKey(originalCell))
             {
-                APiece piece = Layout[originalCell];
+                APiece piece = Context.Layout[originalCell];
                 if (piece != null)
                 {
-                    return piece.GetAvailableMoves(originalCell, Layout).Contains(destinationCell);
+                    return piece.GetAvailableMoves(originalCell, Context.Layout).Contains(destinationCell);
                 }
             }
             return false;
         }
 
-        private void OnMoveProposed(object sender, MoveProposedEventArgs e)
+        public void OnMoveProposed(object sender, MoveProposedEventArgs e)
         {
-            ValidateMove(e.ProposedMove);
+            if (IsValid(e.ProposedMove.Source, e.ProposedMove.Destination))
+            {
+                Context.Move(e.ProposedMove.Source, e.ProposedMove.Destination);
+                OnGameContextChanged(new GameContextChangedEventArgs(Context.Clone()));
+            }
         }
 
         private void OnGameContextChanged(GameContextChangedEventArgs e)

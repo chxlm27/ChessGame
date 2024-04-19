@@ -22,16 +22,10 @@ namespace Chess
         private Pen redPen = new Pen(Color.FromArgb(0, 255, 0), 5);
         private Pen greenPen = new Pen(Color.FromArgb(0, 100, 0), 3);
 
-
-        private Referee referee;
-
         public event EventHandler<MoveProposedEventArgs> MoveProposed;
 
         public Board()
         {
-            Initialize();
-            referee = new Referee();
-            referee.Initialize(this);
         }
 
         public void Initialize()
@@ -42,9 +36,6 @@ namespace Chess
             Layout.Initialize();
             GameContext = new Context();
             GameContext.CurrentPlayer = PieceColors.Black;
-            referee = new Referee();
-            referee.Initialize(this);
-            referee.GameContextChanged += Referee_GameContextChanged;
         }
 
 
@@ -196,14 +187,15 @@ namespace Chess
                 int clickedY = e.X / CellSize;
                 Coordinate destinationCell = Coordinate.GetInstance(clickedX, clickedY);
 
-                if (destinationCell != originalCell && Layout.ContainsKey(destinationCell) == false)
+                if (destinationCell != originalCell)
                 {
                     List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell, Layout);
                     if (availableMoves.Contains(destinationCell))
                     {
                         Layout.Remove(originalCell);
+                        if(destinationCell!=null) //sa dau erase daca exista deja ceva aici
                         Layout.Add(destinationCell, draggedPiece);
-
+                        
                         MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
 
                         GameContext.SwitchPlayer();

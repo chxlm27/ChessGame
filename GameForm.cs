@@ -6,8 +6,9 @@ namespace Chess
 {
     public partial class GameForm : Form
     {
-        private ChessGame Game;
-
+        private ChessGame Game { get; set; }
+        private Board Board { get; set; }
+        
         public GameForm()
         {
             InitializeComponent();
@@ -16,23 +17,21 @@ namespace Chess
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            var board = Game?.GetBoard();
-            board?.Rescale(this.Width, this.Height, menuStrip1.Height);
+            Board?.Rescale(this.Width, this.Height, menuStrip1.Height);
         }
+
         private void beginToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Board board = Game?.GetBoard();
+            Board = new Board();
+            Game = new ChessGame();
 
-            if (board == null)
-            {
-                board = new Board();
-                board.Initialize();
-                Game = new ChessGame();
-                Game.Initialize(board);
-                Controls.Add(board);
-            }
+            Board.Initialize();
+            Game.Initialize(Board);
 
-            board.Rescale(this.Width, this.Height, menuStrip1.Height);
+            Controls.Add(Board);
+            Board.Rescale(this.Width, this.Height, menuStrip1.Height);
+
+            //Game.Start()
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
