@@ -27,7 +27,7 @@ namespace Chess
                 availableMoves.Add(Coordinate.GetInstance(newX, source.Y));
 
                 // If any pawn has moved, all subsequent pawns can only move one square
-                if (hasAnyPawnMoved)
+                if (hasAnyPawnMoved || (Color == PieceColors.White && source.X != 1) || (Color == PieceColors.Black && source.X != 6))
                 {
                     return availableMoves;
                 }
