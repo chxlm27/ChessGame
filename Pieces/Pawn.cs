@@ -6,9 +6,6 @@ namespace Chess
 {
     public class Pawn : APiece
     {
-        // Flag to track whether any pawn has moved yet
-        private static bool hasAnyPawnMoved = false;
-
         public Pawn(PieceColors color) : base(color, PieceType.Pawn)
         {
         }
@@ -17,7 +14,6 @@ namespace Chess
         {
             List<Coordinate> availableMoves = new List<Coordinate>();
 
-            // Pawn moves forward one square (opposite direction)
             int forwardDirection = (Color == PieceColors.White) ? 1 : -1;
             int newX = source.X + forwardDirection;
 
@@ -25,33 +21,17 @@ namespace Chess
             if (newX >= 0 && newX < 8 && !layout.ContainsKey(Coordinate.GetInstance(newX, source.Y)))
             {
                 availableMoves.Add(Coordinate.GetInstance(newX, source.Y));
-
-                // If any pawn has moved, all subsequent pawns can only move one square
-                if (hasAnyPawnMoved || (Color == PieceColors.White && source.X != 1) || (Color == PieceColors.Black && source.X != 6))
-                {
-                    return availableMoves;
-                }
-
-                // Add initial double move for pawn if the square two squares ahead is also empty
-                int doubleMoveX = source.X + forwardDirection * 2;
-                // Check if the squares in front of the pawn are empty for both single and double moves
-                if (doubleMoveX >= 0 && doubleMoveX < 8 && !layout.ContainsKey(Coordinate.GetInstance(doubleMoveX, source.Y)))
-                {
-                    availableMoves.Add(Coordinate.GetInstance(doubleMoveX, source.Y));
-                }
             }
 
-            // Add capturing moves diagonally
-            int[] captureOffsets = { -1, 1 };
-            foreach (int offset in captureOffsets)
+            // Check if there's an opponent's piece to capture diagonally forward
+            foreach (int offset in new int[] { -1, 1 })
             {
-                int captureX = source.X + forwardDirection;
-                int captureY = source.Y + offset;
+                int captureXForward = source.X + forwardDirection;
+                int captureYForward = source.Y + offset;
 
-                if (captureX >= 0 && captureX < 8 && captureY >= 0 && captureY < 8)
+                if (captureXForward >= 0 && captureXForward < 8 && captureYForward >= 0 && captureYForward < 8)
                 {
-                    Coordinate capturePosition = Coordinate.GetInstance(captureX, captureY);
-                    // Check if there's an opponent's piece to capture
+                    Coordinate capturePosition = Coordinate.GetInstance(captureXForward, captureYForward);
                     if (layout.ContainsKey(capturePosition) && layout[capturePosition].Color != Color)
                     {
                         availableMoves.Add(capturePosition);
@@ -59,13 +39,32 @@ namespace Chess
                 }
             }
 
+            // Check for capturing forward directly in front of the pawn
+            int captureX = source.X + forwardDirection;
+            int captureY = source.Y;
+            if (captureX >= 0 && captureX < 8 && captureY >= 0 && captureY < 8)
+            {
+                Coordinate capturePosition = Coordinate.GetInstance(captureX, captureY);
+                if (layout.ContainsKey(capturePosition) && layout[capturePosition].Color != Color)
+                {
+                    availableMoves.Add(capturePosition);
+                }
+            }
+
+            // Check for the initial double move
+            if ((Color == PieceColors.White && source.X == 1) || (Color == PieceColors.Black && source.X == 6))
+            {
+                int doubleMoveX = source.X + forwardDirection * 2;
+                if (doubleMoveX >= 0 && doubleMoveX < 8 && !layout.ContainsKey(Coordinate.GetInstance(doubleMoveX, source.Y)))
+                {
+                    availableMoves.Add(Coordinate.GetInstance(doubleMoveX, source.Y));
+                }
+            }
+
             return availableMoves;
         }
 
-        // Method to set the flag when any pawn moves
-        public static void PawnMoved()
-        {
-            hasAnyPawnMoved = true;
-        }
+
     }
 }
+
