@@ -5,12 +5,9 @@ using System.Windows.Forms;
 
 namespace Chess
 {
-    [Serializable]
     public class ChessGame : AGame
     {
-        [NonSerialized]
         private Board board;
-        [NonSerialized]
         private Referee referee;
 
         public event EventHandler<GameContextChangedEventArgs> GameContextChanged;

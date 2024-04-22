@@ -2,7 +2,6 @@
 
 namespace Chess
 {
-    [Serializable]
     public enum PieceType
     {
         Queen = 0,
