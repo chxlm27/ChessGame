@@ -53,14 +53,21 @@ namespace Chess
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Game != null)
+            if (Game == null)
+            {
+                Game = new ChessGame(); // Create a new instance of ChessGame if one doesn't exist
+            }
+
+            try
             {
                 Game.Load();
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("No game initialized to load.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error loading game: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
     }
 }
