@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows.Forms;
 
 namespace Chess
 {
@@ -34,21 +35,58 @@ namespace Chess
 
         public override void Save()
         {
-            string saveFilePath = GetSaveFilePath();
-            using (FileStream fileStream = new FileStream(saveFilePath, FileMode.Create))
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(fileStream, this);
-            }
-        }
+            // Create a new SaveFileDialog instance
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
 
-        public override void Load()
-        {
-            string saveFilePath = GetSaveFilePath();
-            if (File.Exists(saveFilePath))
+            // Set initial directory and default file name (optional)
+            saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            saveFileDialog.FileName = "saved_game.game";
+
+            // Set file filter (optional)
+            saveFileDialog.Filter = "Game Files (*.game)|*.game|All Files (*.*)|*.*";
+
+            // Show the SaveFileDialog and check if the user clicked the OK button
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
+                    // Get the selected file path from the dialog
+                    string saveFilePath = saveFileDialog.FileName;
+
+                    // Serialize and save the game to the selected file path
+                    using (FileStream fileStream = new FileStream(saveFilePath, FileMode.Create))
+                    {
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        formatter.Serialize(fileStream, this);
+                        Console.WriteLine("Game saved successfully.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error saving game: {ex.Message}");
+                }
+            }
+        }
+
+
+        public override void Load()
+        {
+            // Create a new OpenFileDialog instance
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            // Set initial directory and default file name filter (optional)
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            openFileDialog.Filter = "Game Files (*.game)|*.game|All Files (*.*)|*.*";
+
+            // Show the OpenFileDialog and check if the user clicked the OK button
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    // Get the selected file path from the dialog
+                    string saveFilePath = openFileDialog.FileName;
+
+                    // Load the game from the selected file path
                     using (FileStream fileStream = new FileStream(saveFilePath, FileMode.Open))
                     {
                         BinaryFormatter formatter = new BinaryFormatter();
@@ -58,7 +96,10 @@ namespace Chess
                         this.board = loadedGame.board;
                         this.referee = loadedGame.referee;
 
-                        // Reattach event handlers
+                        // Reinitialize event handlers
+                        this.board.MoveProposed -= this.referee.OnMoveProposed;
+                        this.referee.GameContextChanged -= this.board.OnGameContextChanged;
+
                         this.board.MoveProposed += this.referee.OnMoveProposed;
                         this.referee.GameContextChanged += this.board.OnGameContextChanged;
 
@@ -72,7 +113,7 @@ namespace Chess
             }
             else
             {
-                Console.WriteLine("No saved game found.");
+                Console.WriteLine("No game loaded.");
             }
         }
 
