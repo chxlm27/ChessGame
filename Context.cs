@@ -76,13 +76,12 @@ public class Context
         }
     }
 
-    public static Context Load()
+    public static Context Load(string filePath)
     {
-        string filePath = @"F:\IT Perspectives\current_game.json";
         var settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() } // Updated here
+            Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
         };
         string json = File.ReadAllText(filePath);
         return JsonConvert.DeserializeObject<Context>(json, settings);

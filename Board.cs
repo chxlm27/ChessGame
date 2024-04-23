@@ -237,8 +237,21 @@ namespace Chess
 
         public void LoadGame()
         {
-            GameContext = Context.Load(); // Now simply calls Load
-            this.Refresh(); // Refreshes the board
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json",
+                DefaultExt = "json",
+                InitialDirectory = @"F:\IT Perspectives\", // Set the initial directory for the dialog
+                Title = "Select a game file to load"
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string selectedFilePath = openFileDialog.FileName;
+                GameContext = Context.Load(selectedFilePath); // Load the game from the selected file
+                this.Refresh(); // Refresh the board to reflect the loaded game state
+            }
         }
+
     }
 }

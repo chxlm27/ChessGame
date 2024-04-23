@@ -89,21 +89,34 @@ namespace Chess
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                if (Board == null)
+                Filter = "JSON Files (*.json)|*.json",
+                DefaultExt = "json",
+                InitialDirectory = @"F:\IT Perspectives\" // Set the initial directory for the dialog
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
                 {
-                    Board = new Board();
-                    Controls.Add(Board);
+                    string selectedFilePath = openFileDialog.FileName;
+                    if (Board == null)
+                    {
+                        Board = new Board();
+                        Controls.Add(Board);
+                    }
+                    Board.GameContext = Context.Load(selectedFilePath); // Load the game from the selected file
+                    Board.Refresh(); // Refresh the board to reflect the loaded game state
+                    MessageBox.Show("Game loaded successfully.");
                 }
-                Board.LoadGame(); // Directly load the game
-                MessageBox.Show("Game loaded successfully.");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading game: {ex.Message}", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error loading game: {ex.Message}", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
+
 
     }
 }
