@@ -1,4 +1,8 @@
 ﻿using Chess;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
 
 public class Context
 {
@@ -42,8 +46,35 @@ public class Context
                 }
 
                 Layout.Add(destinationCell, piece);
+
+                // Save the game state after each move
+                Save("current_game.json");
             }
         }
+    }
+
+
+    public void Save(string filePath)
+    {
+        var settings = new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            TypeNameHandling = TypeNameHandling.Auto,
+            Converters = new List<JsonConverter> { new ALayoutConverter() }
+        };
+        string json = JsonConvert.SerializeObject(this, settings);
+        File.WriteAllText(filePath, json);
+    }
+
+    public static Context Load(string filePath)
+    {
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            Converters = new List<JsonConverter> { new ALayoutConverter() }
+        };
+        string json = File.ReadAllText(filePath);
+        return JsonConvert.DeserializeObject<Context>(json, settings);
     }
 
 }

@@ -22,15 +22,23 @@ namespace Chess
 
         private void beginToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Board = new Board();
-            Game = new ChessGame();
+            InitializeGame();
+        }
+
+        private void InitializeGame()
+        {
+            if (Board == null)
+            {
+                Board = new Board();
+                Controls.Add(Board); // Ensure the board is added only once
+            }
+
+            if (Game == null)
+                Game = new ChessGame();
 
             Board.Initialize();
             Game.Initialize(Board);
-
-            Controls.Add(Board);
             Board.Rescale(this.Width, this.Height, menuStrip1.Height);
-
             Game.Start();
         }
 
@@ -41,33 +49,51 @@ namespace Chess
 
         private void saveGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Game != null)
+            if (Board != null)
             {
-                Game.Save();
+                SaveFileDialog saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "JSON Files (*.json)|*.json",
+                    DefaultExt = "json",
+                    AddExtension = true
+                };
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    Board.SaveGame(saveFileDialog.FileName);
+                    MessageBox.Show("Game saved successfully.");
+                }
             }
             else
             {
-                MessageBox.Show("No game initialized to save.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No board initialized to save.", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Game == null)
+            OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Game = new ChessGame(); // Create a new instance of ChessGame if one doesn't exist
-            }
+                Filter = "JSON Files (*.json)|*.json"
+            };
 
-            try
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                Game.Load();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading game: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (Board == null)
+                {
+                    Board = new Board();
+                    Controls.Add(Board);
+                }
+                try
+                {
+                    Board.LoadGame(openFileDialog.FileName);
+                    MessageBox.Show("Game loaded successfully.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error loading game: {ex.Message}", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
-
-
     }
 }

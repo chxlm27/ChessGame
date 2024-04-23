@@ -230,5 +230,15 @@ namespace Chess
             Layout = e.NewContext.Layout;
             this.Refresh();
         }
+        public void SaveGame(string filePath)
+        {
+            GameContext.Save(filePath);
+        }
+
+        public void LoadGame(string filePath)
+        {
+            GameContext = Context.Load(filePath);
+            this.Refresh(); // Assuming this method refreshes the board
+        }
     }
 }
