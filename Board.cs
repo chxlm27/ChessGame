@@ -10,7 +10,7 @@ namespace Chess
         public int CellSize { get; private set; }
         private Dictionary<Coordinate, APiece> pieces;
         private ALayout Layout { get; set; }
-        private Context GameContext;
+        public Context GameContext;
         private Coordinate LastHoveredCell;
 
         private APiece draggedPiece;
@@ -230,15 +230,15 @@ namespace Chess
             Layout = e.NewContext.Layout;
             this.Refresh();
         }
-        public void SaveGame(string filePath)
+        public void SaveGame()
         {
-            GameContext.Save(filePath);
+            GameContext.Save("current_game.json"); // Now simply calls Save
         }
 
-        public void LoadGame(string filePath)
+        public void LoadGame()
         {
-            GameContext = Context.Load(filePath);
-            this.Refresh(); // Assuming this method refreshes the board
+            GameContext = Context.Load(); // Now simply calls Load
+            this.Refresh(); // Refreshes the board
         }
     }
 }

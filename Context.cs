@@ -1,5 +1,6 @@
 ﻿using Chess;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -47,15 +48,19 @@ public class Context
 
                 Layout.Add(destinationCell, piece);
 
-                // Save the game state after each move
+                // Save the game state after each move, with the filename "current_game.json"
                 Save("current_game.json");
             }
         }
     }
 
 
-    public void Save(string filePath)
+
+    public void Save(string fileName)
     {
+        // Combine the fixed directory path with the provided fileName
+        string filePath = Path.Combine(@"F:\IT Perspectives\", fileName);
+
         var settings = new JsonSerializerSettings
         {
             Formatting = Formatting.Indented,
@@ -63,11 +68,20 @@ public class Context
             Converters = new List<JsonConverter> { new ALayoutConverter() }
         };
         string json = JsonConvert.SerializeObject(this, settings);
-        File.WriteAllText(filePath, json);
+        try
+        {
+            File.WriteAllText(filePath, json);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to save game: {ex.Message}", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
-    public static Context Load(string filePath)
+
+    public static Context Load()
     {
+        string filePath = @"F:\IT Perspectives\current_game.json"; // Hardcoded path
         var settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
@@ -76,5 +90,6 @@ public class Context
         string json = File.ReadAllText(filePath);
         return JsonConvert.DeserializeObject<Context>(json, settings);
     }
+
 
 }

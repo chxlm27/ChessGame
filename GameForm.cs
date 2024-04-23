@@ -49,51 +49,40 @@ namespace Chess
 
         private void saveGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Board != null)
+            if (Board != null && Board.GameContext != null)
             {
-                SaveFileDialog saveFileDialog = new SaveFileDialog
+                try
                 {
-                    Filter = "JSON Files (*.json)|*.json",
-                    DefaultExt = "json",
-                    AddExtension = true
-                };
-
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    Board.SaveGame(saveFileDialog.FileName);
                     MessageBox.Show("Game saved successfully.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error saving game: {ex.Message}", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
             {
-                MessageBox.Show("No board initialized to save.", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No game in progress to save.", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Filter = "JSON Files (*.json)|*.json"
-            };
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            try
             {
                 if (Board == null)
                 {
                     Board = new Board();
                     Controls.Add(Board);
                 }
-                try
-                {
-                    Board.LoadGame(openFileDialog.FileName);
-                    MessageBox.Show("Game loaded successfully.");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error loading game: {ex.Message}", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                Board.LoadGame(); // Directly load the game
+                MessageBox.Show("Game loaded successfully.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading game: {ex.Message}", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
     }
 }
