@@ -58,14 +58,12 @@ public class Context
 
     public void Save(string fileName)
     {
-        // Combine the fixed directory path with the provided fileName
         string filePath = Path.Combine(@"F:\IT Perspectives\", fileName);
-
         var settings = new JsonSerializerSettings
         {
             Formatting = Formatting.Indented,
             TypeNameHandling = TypeNameHandling.Auto,
-            Converters = new List<JsonConverter> { new ALayoutConverter() }
+            Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() } // Updated here
         };
         string json = JsonConvert.SerializeObject(this, settings);
         try
@@ -78,18 +76,18 @@ public class Context
         }
     }
 
-
     public static Context Load()
     {
-        string filePath = @"F:\IT Perspectives\current_game.json"; // Hardcoded path
+        string filePath = @"F:\IT Perspectives\current_game.json";
         var settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            Converters = new List<JsonConverter> { new ALayoutConverter() }
+            Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() } // Updated here
         };
         string json = File.ReadAllText(filePath);
         return JsonConvert.DeserializeObject<Context>(json, settings);
     }
+
 
 
 }

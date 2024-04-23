@@ -53,6 +53,7 @@
     <Compile Include="ALayout.cs" />
     <Compile Include="Converter\ALayoutConverter.cs" />
     <Compile Include="Context.cs" />
+    <Compile Include="Converter\CoordinateConverter.cs" />
     <Compile Include="Coordinate.cs" />
     <Compile Include="ChessLayout.cs" />
     <Compile Include="GameContextChangedEventArgs.cs" />

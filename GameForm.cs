@@ -51,13 +51,33 @@ namespace Chess
         {
             if (Board != null && Board.GameContext != null)
             {
-                try
+                SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
-                    MessageBox.Show("Game saved successfully.");
-                }
-                catch (Exception ex)
+                    Filter = "JSON Files (*.json)|*.json",
+                    DefaultExt = "json",
+                    AddExtension = true,
+                    InitialDirectory = @"F:\IT Perspectives\", // Default directory
+                    FileName = "Game_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json" // Suggest a default filename with timestamp
+                };
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    MessageBox.Show($"Error saving game: {ex.Message}", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    try
+                    {
+                        // Path of the current game state file
+                        string sourceFilePath = Path.Combine(@"F:\IT Perspectives\", "current_game.json");
+                        // Path where the user wants to save the copy
+                        string destinationFilePath = saveFileDialog.FileName;
+
+                        // Copy the current game state file to the new location
+                        File.Copy(sourceFilePath, destinationFilePath, true);
+
+                        MessageBox.Show("Game saved successfully to: " + destinationFilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error saving game: {ex.Message}", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             else
@@ -65,6 +85,7 @@ namespace Chess
                 MessageBox.Show("No game in progress to save.", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
