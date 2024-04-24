@@ -28,21 +28,28 @@ namespace Chess
             board.Initialize();
             referee.Initialize();
 
+            // Connecting Board's MoveProposed to Referee's handler
             board.MoveProposed += referee.OnMoveProposed;
+            // Connecting Referee's GameContextChanged to Board's event handler
             referee.GameContextChanged += board.OnGameContextChanged;
 
-            // Listen for game context changes to handle internal game state updates
+            // Ensuring that the referee's context change triggers game-wide updates
             referee.GameContextChanged += OnRefereeGameContextChanged;
 
+            // Saving the game whenever the state changes
             GameContext.StateChanged += () => SaveGame("current_game.json");
         }
 
+
         public override void Start()
         {
+            // Set the initial player to White
             GameContext.CurrentPlayer = PieceColors.Black;
+            // Force a context change event to start the game with the initial setup
             GameContextChangedEventArgs args = new GameContextChangedEventArgs(GameContext.Clone());
             OnRefereeGameContextChanged(this, args);
         }
+
 
 
         private void OnRefereeGameContextChanged(object sender, GameContextChangedEventArgs e)
