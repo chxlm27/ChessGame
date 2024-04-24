@@ -39,7 +39,6 @@ namespace Chess
             Layout.Initialize();
             if (GameContext == null)
                 GameContext = new Context();
-            GameContext.CurrentPlayer = PieceColors.Black;
             if (ChessGame == null)
                 ChessGame = new ChessGame();
         }
