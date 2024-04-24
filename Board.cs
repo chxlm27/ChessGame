@@ -12,6 +12,7 @@ namespace Chess
         private ALayout Layout { get; set; }
         public Context GameContext;
         private Coordinate LastHoveredCell;
+        private ChessGame chessGame;
 
         private APiece draggedPiece;
         private Coordinate originalCell;
@@ -32,6 +33,10 @@ namespace Chess
         {
             this.DoubleBuffered = true;
             this.MouseMove += Board_MouseMove;
+            Layout = new ChessLayout();
+            Layout.Initialize();
+            GameContext = new Context();
+            GameContext.CurrentPlayer = PieceColors.Black;
         }
 
 
@@ -231,24 +236,15 @@ namespace Chess
         }
         public void SaveGame()
         {
-            GameContext.Save("current_game.json"); // Now simply calls Save
+            GameContext.Save("current_game.json"); // Call Save on GameContext
         }
 
-        public void LoadGame()
+        public void LoadGame(string filePath)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            if (chessGame != null)
             {
-                Filter = "JSON Files (*.json)|*.json",
-                DefaultExt = "json",
-                InitialDirectory = @"F:\IT Perspectives\", // Set the initial directory for the dialog
-                Title = "Select a game file to load"
-            };
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string selectedFilePath = openFileDialog.FileName;
-                GameContext = Context.Load(selectedFilePath); // Load the game from the selected file
-                this.Refresh(); // Refresh the board to reflect the loaded game state
+                GameContext = chessGame.LoadGame(filePath); // Delegate loading to ChessGame
+                this.Refresh();
             }
         }
 

@@ -107,7 +107,7 @@ namespace Chess
                         Controls.Add(Board);
                         
                     }
-                    Board.GameContext = Context.Load(selectedFilePath);
+                    Board.GameContext = chessGame.LoadGame(selectedFilePath);
 
                     Board.Rescale(this.Width, this.Height, menuStrip1.Height);
                     MessageBox.Show("Game loaded successfully.");

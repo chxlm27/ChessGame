@@ -13,17 +13,16 @@ public class Context
     public Context()
     {
         CurrentPlayer = PieceColors.White;
-        Layout = new ChessLayout(); // Initialize the layout
+        Layout = new ChessLayout();
         Layout.Initialize();
     }
 
     public Context Clone()
     {
-        // Implement deep clone logic here if necessary
         return new Context
         {
             CurrentPlayer = this.CurrentPlayer,
-            Layout = this.Layout.Clone() // Clone the layout
+            Layout = this.Layout.Clone()
         };
     }
 
@@ -48,14 +47,11 @@ public class Context
 
                 Layout.Add(destinationCell, piece);
 
-                // Save the game state after each move, with the filename "current_game.json"
-                Save("current_game.json"); //!!!!!!!!!!!
+                // Save the game state after each move
+                Save("current_game.json");
             }
-
         }
     }
-
-
 
     public void Save(string fileName)
     {
@@ -64,7 +60,7 @@ public class Context
         {
             Formatting = Formatting.Indented,
             TypeNameHandling = TypeNameHandling.Auto,
-            Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() } // Updated here
+            Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
         };
         string json = JsonConvert.SerializeObject(this, settings);
         try
@@ -76,18 +72,4 @@ public class Context
             MessageBox.Show($"Failed to save game: {ex.Message}", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
-
-    public static Context Load(string filePath)
-    {
-        var settings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
-        };
-        string json = File.ReadAllText(filePath);
-        return JsonConvert.DeserializeObject<Context>(json, settings);
-    }
-
-
-
 }
