@@ -12,7 +12,8 @@ namespace Chess
         private ALayout Layout { get; set; }
         public Context GameContext;
         private Coordinate LastHoveredCell;
-        private ChessGame chessGame;
+        public ChessGame ChessGame { get; set; }  // Assuming this is set when a game is created or loaded
+
 
         private APiece draggedPiece;
         private Coordinate originalCell;
@@ -27,6 +28,7 @@ namespace Chess
 
         public Board()
         {
+            Initialize();
         }
 
         public void Initialize()
@@ -35,8 +37,11 @@ namespace Chess
             this.MouseMove += Board_MouseMove;
             Layout = new ChessLayout();
             Layout.Initialize();
-            GameContext = new Context();
+            if (GameContext == null)
+                GameContext = new Context();
             GameContext.CurrentPlayer = PieceColors.Black;
+            if (ChessGame == null)
+                ChessGame = new ChessGame();
         }
 
 
@@ -236,15 +241,27 @@ namespace Chess
         }
         public void SaveGame()
         {
-            GameContext.Save("current_game.json"); // Call Save on GameContext
+            if (ChessGame != null)
+            {
+                // Assuming "current_game.json" is managed by ChessGame, not passed here
+                ChessGame.SaveGame("current_game.json");
+            }
+            else
+            {
+                ChessGame = new ChessGame();
+            }
         }
 
         public void LoadGame(string filePath)
         {
-            if (chessGame != null)
+            if (ChessGame != null)
             {
-                GameContext = chessGame.LoadGame(filePath); // Delegate loading to ChessGame
-                this.Refresh();
+                GameContext = ChessGame.LoadGame(filePath);
+                this.Refresh(); // Assuming Refresh is a method that updates the board's UI or state
+            }
+            else
+            {
+                ChessGame = new ChessGame();
             }
         }
 

@@ -34,10 +34,15 @@ namespace Chess
             }
 
             if (Game == null)
+            {
                 Game = new ChessGame();
+                Game.Initialize(Board);
+            }
 
             Board.Initialize();
             Game.Initialize(Board);
+            Board.ChessGame = Game; // Ensure Board has reference to ChessGame
+            Board.GameContext = Game.GameContext;
             Board.Rescale(this.Width, this.Height, menuStrip1.Height);
             Game.Start();
         }
@@ -49,43 +54,27 @@ namespace Chess
 
         private void saveGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Board != null && Board.GameContext != null)
+            if (Board != null && Board.ChessGame != null && Board.ChessGame.GameContext != null)
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
                     Filter = "JSON Files (*.json)|*.json",
                     DefaultExt = "json",
                     AddExtension = true,
-                    InitialDirectory = @"F:\IT Perspectives\",
-                    FileName = "Game_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json" 
+                    FileName = "Game_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json"
                 };
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    try
-                    {
-                     
-                        string sourceFilePath = Path.Combine(@"F:\IT Perspectives\", "current_game.json");
-                    
-                        string destinationFilePath = saveFileDialog.FileName;
-
-            
-                        File.Copy(sourceFilePath, destinationFilePath, true);
-
-                        MessageBox.Show("Game saved successfully to: " + destinationFilePath);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Error saving game: {ex.Message}", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    Board.ChessGame.SaveGame(saveFileDialog.FileName);
+                    MessageBox.Show("Game saved successfully to: " + saveFileDialog.FileName, "Save Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             else
             {
-                MessageBox.Show("No game in progress to save.", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No game context available to save or Chess Game not initialized.", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {

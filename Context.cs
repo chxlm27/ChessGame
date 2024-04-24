@@ -9,10 +9,11 @@ public class Context
 {
     public PieceColors CurrentPlayer { get; set; }
     public ALayout Layout { get; set; }
-
+    public delegate void StateChangedHandler();
+    public event StateChangedHandler StateChanged;
     public Context()
     {
-        CurrentPlayer = PieceColors.White;
+        CurrentPlayer = PieceColors.Black;
         Layout = new ChessLayout();
         Layout.Initialize();
     }
@@ -47,29 +48,14 @@ public class Context
 
                 Layout.Add(destinationCell, piece);
 
-                // Save the game state after each move
-                Save("current_game.json");
+                // Inform ChessGame to save the game state after each move
+                OnStateChanged(); // This method needs to be implemented
             }
         }
     }
 
-    public void Save(string fileName)
+    protected virtual void OnStateChanged()
     {
-        string filePath = Path.Combine(@"F:\IT Perspectives\", fileName);
-        var settings = new JsonSerializerSettings
-        {
-            Formatting = Formatting.Indented,
-            TypeNameHandling = TypeNameHandling.Auto,
-            Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
-        };
-        string json = JsonConvert.SerializeObject(this, settings);
-        try
-        {
-            File.WriteAllText(filePath, json);
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Failed to save game: {ex.Message}", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
+        StateChanged?.Invoke();
     }
 }
