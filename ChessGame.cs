@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Windows.Forms;
 
 namespace Chess
 {
@@ -20,9 +18,12 @@ namespace Chess
             board = _board;
             referee = new Referee();
 
+            // Initialize GameContext if not already done
             if (GameContext == null)
             {
-                GameContext = new Context();  // Properly instantiate if not already done
+                GameContext = new Context();
+                GameContext.Layout = new ChessLayout(); // Create and assign a new ChessLayout
+                GameContext.Layout.Initialize(); // Initialize the layout with chess pieces
             }
 
             board.Initialize();
@@ -32,16 +33,8 @@ namespace Chess
             referee.GameContextChanged += board.OnGameContextChanged;
 
             // Set up game context and listen for state changes
+            referee.GameContextChanged += OnRefereeGameContextChanged;
 
-            referee.GameContextChanged += (sender, args) =>
-            {
-                GameContext = args.NewContext;
-                // Optionally add logic to handle null or invalid contexts
-                if (GameContext == null)
-                {
-                    GameContext = new Context(); // Re-initialize if null
-                }
-            };
             GameContext.StateChanged += () => SaveGame("current_game.json");
         }
 
@@ -63,7 +56,7 @@ namespace Chess
             string json = JsonConvert.SerializeObject(GameContext, settings);
             try
             {
-                File.WriteAllText(filePath, json);  // Write directly to the path chosen in the dialog
+                File.WriteAllText(filePath, json);
                 Console.WriteLine($"Game saved successfully at: {filePath}");
             }
             catch (Exception ex)
@@ -71,8 +64,6 @@ namespace Chess
                 Console.WriteLine($"Error saving game: {ex.Message}");
             }
         }
-
-
 
         public override Context LoadGame(string filePath)
         {
@@ -95,16 +86,15 @@ namespace Chess
             }
         }
 
-
-        public override void Start()
-        {//arbitru anunta jocul, se lanseaza ONRefereeGameContextChanged
-        }
-
         private void OnRefereeGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
-            GameContext = e.NewContext; // Update local context
+            GameContext = e.NewContext;
             GameContextChanged?.Invoke(this, e);
         }
 
+        public override void Start()
+        {
+           //Arbitrul anunta jocul, se lanseaza OnRefereeGameContextChanged
+        }
     }
 }
