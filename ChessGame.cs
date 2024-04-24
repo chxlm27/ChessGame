@@ -18,12 +18,11 @@ namespace Chess
             board = _board;
             referee = new Referee();
 
-            // Initialize GameContext if not already done
             if (GameContext == null)
             {
                 GameContext = new Context();
-                GameContext.Layout = new ChessLayout(); // Create and assign a new ChessLayout
-                GameContext.Layout.Initialize(); // Initialize the layout with chess pieces
+                GameContext.Layout = new ChessLayout();
+                GameContext.Layout.Initialize();
             }
 
             board.Initialize();
@@ -32,10 +31,24 @@ namespace Chess
             board.MoveProposed += referee.OnMoveProposed;
             referee.GameContextChanged += board.OnGameContextChanged;
 
-            // Set up game context and listen for state changes
+            // Listen for game context changes to handle internal game state updates
             referee.GameContextChanged += OnRefereeGameContextChanged;
 
             GameContext.StateChanged += () => SaveGame("current_game.json");
+        }
+
+        public override void Start()
+        {
+            GameContext.CurrentPlayer = PieceColors.Black;
+            GameContextChangedEventArgs args = new GameContextChangedEventArgs(GameContext.Clone());
+            OnRefereeGameContextChanged(this, args);
+        }
+
+
+        private void OnRefereeGameContextChanged(object sender, GameContextChangedEventArgs e)
+        {
+            GameContext = e.NewContext;
+            GameContextChanged?.Invoke(this, e);
         }
 
         public override void SaveGame(string filePath)
@@ -84,17 +97,6 @@ namespace Chess
                 Console.WriteLine($"Error loading game: {ex.Message}");
                 return null;
             }
-        }
-
-        private void OnRefereeGameContextChanged(object sender, GameContextChangedEventArgs e)
-        {
-            GameContext = e.NewContext;
-            GameContextChanged?.Invoke(this, e);
-        }
-
-        public override void Start()
-        {
-           //Arbitrul anunta jocul, se lanseaza OnRefereeGameContextChanged
         }
     }
 }
