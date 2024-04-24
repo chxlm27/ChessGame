@@ -123,12 +123,12 @@ namespace Chess
 
 
         public override void Start()
-        {
+        {//arbitru anunta jocul, se lanseaza ONRefereeGameContextChanged
         }
 
         private void OnRefereeGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
-            GameContextChanged?.Invoke(this, e);
+            GameContextChanged?.Invoke(this, e); // sa salvez local contextul primit, nu sa lansez
         }
     }
 }

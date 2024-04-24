@@ -32,10 +32,6 @@ namespace Chess
         {
             this.DoubleBuffered = true;
             this.MouseMove += Board_MouseMove;
-            Layout = new ChessLayout();
-            Layout.Initialize();
-            GameContext = new Context();
-            GameContext.CurrentPlayer = PieceColors.Black;
         }
 
 
@@ -100,10 +96,13 @@ namespace Chess
         }
 
         private void DrawLayout(Graphics g)
-        {
-            foreach (Coordinate c in Layout.Keys)
+        { 
+            if (Layout != null)
             {
-                g.DrawImage(Layout[c].GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
+                foreach (Coordinate c in Layout.Keys)
+                {
+                    g.DrawImage(Layout[c].GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
+                }
             }
         }
 

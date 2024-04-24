@@ -30,7 +30,7 @@ namespace Chess
             if (Board == null)
             {
                 Board = new Board();
-                Controls.Add(Board); // Ensure the board is added only once
+                Controls.Add(Board);
             }
 
             if (Game == null)
@@ -56,20 +56,20 @@ namespace Chess
                     Filter = "JSON Files (*.json)|*.json",
                     DefaultExt = "json",
                     AddExtension = true,
-                    InitialDirectory = @"F:\IT Perspectives\", // Default directory
-                    FileName = "Game_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json" // Suggest a default filename with timestamp
+                    InitialDirectory = @"F:\IT Perspectives\",
+                    FileName = "Game_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json" 
                 };
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
-                        // Path of the current game state file
+                     
                         string sourceFilePath = Path.Combine(@"F:\IT Perspectives\", "current_game.json");
-                        // Path where the user wants to save the copy
+                    
                         string destinationFilePath = saveFileDialog.FileName;
 
-                        // Copy the current game state file to the new location
+            
                         File.Copy(sourceFilePath, destinationFilePath, true);
 
                         MessageBox.Show("Game saved successfully to: " + destinationFilePath);
@@ -93,7 +93,7 @@ namespace Chess
             {
                 Filter = "JSON Files (*.json)|*.json",
                 DefaultExt = "json",
-                InitialDirectory = @"F:\IT Perspectives\" // Set the initial directory for the dialog
+                InitialDirectory = @"F:\IT Perspectives\" 
             };
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -105,9 +105,11 @@ namespace Chess
                     {
                         Board = new Board();
                         Controls.Add(Board);
+                        
                     }
-                    Board.GameContext = Context.Load(selectedFilePath); // Load the game from the selected file
-                    Board.Refresh(); // Refresh the board to reflect the loaded game state
+                    Board.GameContext = Context.Load(selectedFilePath);
+
+                    Board.Rescale(this.Width, this.Height, menuStrip1.Height);
                     MessageBox.Show("Game loaded successfully.");
                 }
                 catch (Exception ex)

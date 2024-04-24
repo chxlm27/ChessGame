@@ -49,8 +49,9 @@ public class Context
                 Layout.Add(destinationCell, piece);
 
                 // Save the game state after each move, with the filename "current_game.json"
-                Save("current_game.json");
+                Save("current_game.json"); //!!!!!!!!!!!
             }
+
         }
     }
 
