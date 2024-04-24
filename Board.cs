@@ -43,13 +43,6 @@ namespace Chess
                 ChessGame = new ChessGame();
         }
 
-
-        private void Referee_GameContextChanged(object sender, GameContextChangedEventArgs e)
-        {
-            Layout = e.NewContext.Layout; // Update the layout with the new context's layout
-            this.Refresh(); // Refresh the board to reflect the changes
-        }
-
         private void Board_MouseMove(object sender, MouseEventArgs e)
         {
             int mouseX = e.X / CellSize;
