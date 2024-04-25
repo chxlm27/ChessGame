@@ -242,18 +242,32 @@ namespace Chess
             }
         }
 
-        public void LoadGame(string filePath)
+        public void LoadGame(string filePath, int menuHeight)
         {
             if (ChessGame != null)
             {
                 GameContext = ChessGame.LoadGame(filePath);
-                this.Refresh(); // Assuming Refresh is a method that updates the board's UI or state
+                if (GameContext != null)
+                {
+                    Layout = GameContext.Layout; // Make sure the Board's layout is updated.
+                    ChessGame.GameContext = GameContext; // Update the ChessGame's context.
+                    this.Refresh(); // Refresh the board to reflect the new game state.
+                    Rescale(this.Parent.Width, this.Parent.Height, menuHeight); // Rescale after loading the game
+                }
             }
             else
             {
-                ChessGame = new ChessGame();
+                MessageBox.Show("Chess game is not initialized.", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        public void SetContext(Context newContext)
+        {
+            GameContext = newContext;
+            Layout = newContext.Layout;
+            this.Refresh();
+        }
+
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Chess;
+using System.Windows.Forms;
 
 public class Context
 {

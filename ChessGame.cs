@@ -9,7 +9,7 @@ namespace Chess
     {
         private Board board;
         private Referee referee;
-        public Context GameContext { get; private set; }
+        public Context GameContext { get; set; }
 
         public event EventHandler<GameContextChangedEventArgs> GameContextChanged;
 

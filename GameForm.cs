@@ -8,6 +8,7 @@ namespace Chess
     {
         private ChessGame Game { get; set; }
         private Board Board { get; set; }
+        private Context GameContext { get; set; }
 
         public GameForm()
         {
@@ -96,17 +97,18 @@ namespace Chess
                         Controls.Add(Board);
                     }
 
-                    // Ensure chessGame is initialized
-                    if (chessGame == null)
+                    if (Game == null)
                     {
-                        chessGame = new ChessGame();
+                        Game = new ChessGame();
                     }
 
-                    // Load game
-                    Board.GameContext = chessGame.LoadGame(selectedFilePath);
-
-                    Board.Rescale(this.Width, this.Height, menuStrip1.Height);
-                    MessageBox.Show("Game loaded successfully.");
+                    Context loadedContext = Game.LoadGame(selectedFilePath);
+                    if (loadedContext != null)
+                    {
+                        Board.Rescale(this.Width, this.Height, menuStrip1.Height);
+                        Board.SetContext(loadedContext);  // Ensure the board is updated with the loaded game contex
+                        MessageBox.Show("Game loaded successfully.");
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -114,7 +116,6 @@ namespace Chess
                 }
             }
         }
-
 
 
     }
