@@ -8,12 +8,10 @@ namespace Chess
     public partial class Board : UserControl
     {
         public int CellSize { get; private set; }
-        private Dictionary<Coordinate, APiece> pieces;
         private ALayout Layout { get; set; }
         public Context GameContext;
         private Coordinate LastHoveredCell;
-        public ChessGame ChessGame { get; set; }  // Assuming this is set when a game is created or loaded
-
+        public ChessGame ChessGame { get; set; } 
 
         private APiece draggedPiece;
         private Coordinate originalCell;

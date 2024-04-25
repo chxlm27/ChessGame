@@ -82,7 +82,7 @@ namespace Chess
             {
                 Filter = "JSON Files (*.json)|*.json",
                 DefaultExt = "json",
-                InitialDirectory = @"F:\IT Perspectives\" 
+                InitialDirectory = @"F:\IT Perspectives\"
             };
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -94,8 +94,15 @@ namespace Chess
                     {
                         Board = new Board();
                         Controls.Add(Board);
-                        
                     }
+
+                    // Ensure chessGame is initialized
+                    if (chessGame == null)
+                    {
+                        chessGame = new ChessGame();
+                    }
+
+                    // Load game
                     Board.GameContext = chessGame.LoadGame(selectedFilePath);
 
                     Board.Rescale(this.Width, this.Height, menuStrip1.Height);
@@ -107,6 +114,7 @@ namespace Chess
                 }
             }
         }
+
 
 
     }
