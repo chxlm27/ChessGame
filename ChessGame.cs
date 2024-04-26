@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Chess
@@ -9,7 +9,7 @@ namespace Chess
     {
         private Board board;
         private Referee referee;
-        public Context GameContext { get; set; }
+        public Context GameContext { get; set; } = new Context { Layout = new ChessLayout() };
 
         public event EventHandler<GameContextChangedEventArgs> GameContextChanged;
 
@@ -17,13 +17,6 @@ namespace Chess
         {
             board = _board;
             referee = new Referee();
-
-            if (GameContext == null)
-            {
-                GameContext = new Context();
-                GameContext.Layout = new ChessLayout();
-                GameContext.Layout.Initialize();
-            }
 
             board.Initialize();
             referee.Initialize();
@@ -63,7 +56,8 @@ namespace Chess
             {
                 Formatting = Formatting.Indented,
                 TypeNameHandling = TypeNameHandling.Auto,
-                Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
+                Converters = new List
+                <JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
             };
 
             string json = JsonConvert.SerializeObject(GameContext, settings);
@@ -85,10 +79,12 @@ namespace Chess
                 var settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
-                    Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
+                    Converters = new List
+                    <JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
                 };
                 string json = File.ReadAllText(filePath);
-                GameContext = JsonConvert.DeserializeObject<Context>(json, settings);
+                GameContext = JsonConvert.DeserializeObject
+                <Context>(json, settings);
                 GameContextChanged?.Invoke(this, new GameContextChangedEventArgs(GameContext));
                 return GameContext;
             }
