@@ -227,7 +227,7 @@ namespace Chess
 
         public void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
-            Layout = e.NewContext.Layout; // doar contextul, fara layout
+            this.GameContext = e.NewContext;
             this.Refresh();
         }
 

@@ -14,11 +14,27 @@ namespace Chess
 
         public void Initialize()
         {
-            Context = new Context();
-            ALayout Layout = new ChessLayout();
-            Layout.Initialize();
-            Context.Layout = Layout;
         }
+
+        public void Start()
+        {
+            if (Context == null)
+            {
+                Context = new Context();
+                ALayout layout = new ChessLayout();
+                layout.Initialize();
+                Context.Layout = layout;
+                OnGameContextChanged(new GameContextChangedEventArgs(Context.Clone()));
+            }
+            Context.CurrentPlayer = PieceColors.Black; // Default starting player
+        }
+
+        public void StartWith(Context loadedContext)
+        {
+            Context = loadedContext;
+            OnGameContextChanged(new GameContextChangedEventArgs(Context.Clone()));
+        }
+
 
         public bool IsValid(Coordinate originalCell, Coordinate destinationCell)
         {
