@@ -83,7 +83,6 @@ namespace Chess
             {
                 Filter = "JSON Files (*.json)|*.json",
                 DefaultExt = "json",
-                InitialDirectory = @"F:\IT Perspectives\"
             };
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)

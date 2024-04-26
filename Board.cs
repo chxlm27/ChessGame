@@ -97,7 +97,7 @@ namespace Chess
 
         private void DrawLayout(Graphics g)
         { 
-            if (Layout != null)
+            if (Layout != null) //luat de pe conetxt din event de la referee (context!=null & layout din context!=null)
             {
                 foreach (Coordinate c in Layout.Keys)
                 {
@@ -224,11 +224,13 @@ namespace Chess
             }
             return null;
         }
+
         public void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
-            Layout = e.NewContext.Layout;
+            Layout = e.NewContext.Layout; // doar contextul, fara layout
             this.Refresh();
         }
+
         public void SaveGame()
         {
             if (ChessGame != null)

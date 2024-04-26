@@ -43,9 +43,7 @@ public class Context
                 }
 
                 Layout.Add(destinationCell, piece);
-
-                // Inform ChessGame to save the game state after each move
-                OnStateChanged(); // This method needs to be implemented
+                OnStateChanged(); 
             }
         }
     }
