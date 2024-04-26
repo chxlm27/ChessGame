@@ -1,186 +1,275 @@
-﻿/*using System.Drawing;
-using System.Windows.Forms;
-
-namespace Chess
-{
-    public class Board : UserControl
-    {
-        public const int BoardSize = 8;
-        public const int CellSize = 50; // Adjust as needed
-
-        private readonly PictureBox[,] _cells;
-        private Image _chessPiecesImage;
-
-        public Board()
-        {
-            _cells = new PictureBox[BoardSize, BoardSize];
-
-            // Load the chess pieces image
-            _chessPiecesImage = Image.FromFile("ChessPiecesArray.png");
-
-            // Initialize the board
-            for (int row = 0; row < BoardSize; row++)
-            {
-                for (int col = 0; col < BoardSize; col++)
-                {
-                    _cells[row, col] = new PictureBox
-                    {
-                        Size = new Size(CellSize, CellSize),
-                        Location = new Point(col * CellSize, row * CellSize),
-                        BackColor = (row + col) % 2 == 0 ? Color.White : Color.Gray
-                    };
-                    Controls.Add(_cells[row, col]);
-                }
-            }
-
-            // Adjust the size of the user control based on the cells
-            Size = new Size(BoardSize * CellSize, BoardSize * CellSize);
-
-            // Place the chess pieces on the board
-            PlaceChessPieces();
-        }
-
-
-
-        private void PlaceChessPieces()
-        {
-            // Determine the size of each chess piece in the image
-            int pieceWidth = _chessPiecesImage.Width / 6; // 6 pieces in total in the image
-            int pieceHeight = _chessPiecesImage.Height / 2; // 2 rows (black and white)
-
-            // Define the mapping of piece types to their positions in the image
-            PieceType[] pieceTypes = {
-        PieceType.Queen, PieceType.King, PieceType.Rook, PieceType.Knight, PieceType.Bishop, PieceType.Pawn
-    };
-
-            // Rows to place pieces
-            int[] rowsWithPieces = { 0, 1, 6, 7 };
-
-            foreach (int row in rowsWithPieces)
-            {
-                for (int col = 0; col < BoardSize; col++)
-                {
-                    // Calculate the index of the piece in the image based on its position on the board
-                    int pieceIndex;
-                    if (row == 0 || row == BoardSize - 1)
-                    {
-                        // Place Tower, Horse, Crazy, Queen, King, Crazy, Horse, Tower in reverse order for white pieces
-                        int[] pieceOrder = { 2, 3, 4, 0, 1, 4, 3, 2 }; // Tower, Horse, Crazy, Queen, King, Crazy, Horse, Tower
-                        pieceIndex = pieceOrder[col];
-                        if (row == BoardSize - 1) // Invert for the last row (white pieces)
-                            pieceIndex = pieceOrder[7 - col];
-                    }
-                    else if (row == 1 || row == 6)
-                    {
-                        // Set black pawns for the second and white pawns for the seventh row
-                        pieceIndex = 5; // Index of black/white pawn in the image
-                    }
-                    else
-                    {
-                        // Rows 2 to 5 are empty, skip placing pieces
-                        continue;
-                    }
-
-                    // Calculate the position of the piece in the image
-                    int x = pieceIndex * pieceWidth;
-                    int y = row < 4 ? 0 : pieceHeight; // First 4 rows for black, next 4 for white
-
-                    // Crop the piece from the image
-                    Bitmap pieceBitmap = new Bitmap(pieceWidth, pieceHeight);
-                    Graphics g = Graphics.FromImage(pieceBitmap);
-                    Rectangle sourceRectangle = new Rectangle(x, y, pieceWidth, pieceHeight);
-                    Rectangle destRectangle = new Rectangle(0, 0, pieceWidth, pieceHeight);
-                    g.DrawImage(_chessPiecesImage, destRectangle, sourceRectangle, GraphicsUnit.Pixel);
-                    g.Dispose();
-
-                    // Create a PictureBox to display the piece
-                    _cells[row, col].Image = pieceBitmap;
-                    _cells[row, col].SizeMode = PictureBoxSizeMode.StretchImage;
-                }
-            }
-        }
-
-    }
-
-    // Define the PieceType enumeration
-    public enum PieceType
-    {
-        Queen,
-        King,
-        Rook,
-        Knight,
-        Bishop,
-        Pawn
-    }
-}
-*/
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace Chess
 {
-    public class Board : UserControl
+    public partial class Board : UserControl
     {
-        private const int _size = 8;
-        private const int _cellSize = 50;
-        private int CellSize;
-        private Image _chessPiecesImage;
+        public int CellSize { get; private set; }
+        private ALayout Layout { get; set; }
+        public Context GameContext;
+        private Coordinate LastHoveredCell;
+        public ChessGame ChessGame { get; set; } 
+
+        private APiece draggedPiece;
+        private Coordinate originalCell;
+        private int offsetX, offsetY;
+        private bool isDragging = false;
+
+        private Pen highlightPen = new Pen(Brushes.Red, 5);
+        private Pen redPen = new Pen(Color.FromArgb(0, 255, 0), 5);
+        private Pen greenPen = new Pen(Color.FromArgb(0, 100, 0), 3);
+
+        public event EventHandler<MoveProposedEventArgs> MoveProposed;
 
         public Board()
         {
-            // Load the chess pieces image
-            _chessPiecesImage = Image.FromFile("ChessPiecesArray.png");
+            Initialize();
+        }
 
-            // Set initial size of the board
-            this.Width = _size * _cellSize;
-            this.Height = _size * _cellSize;
+        public void Initialize()
+        {
+            this.DoubleBuffered = true;
+            this.MouseMove += Board_MouseMove;
+            Layout = new ChessLayout();
+            Layout.Initialize();
+            if (GameContext == null)
+                GameContext = new Context();
+            if (ChessGame == null)
+                ChessGame = new ChessGame();
+        }
+
+        private void Board_MouseMove(object sender, MouseEventArgs e)
+        {
+            int mouseX = e.X / CellSize;
+            int mouseY = e.Y / CellSize;
+            Coordinate currentHoveredCell = Coordinate.GetInstance(mouseY, mouseX);
+
+            if (LastHoveredCell != currentHoveredCell)
+            {
+                LastHoveredCell = currentHoveredCell;
+                Console.WriteLine($"Mouse moved from {LastHoveredCell.X},{LastHoveredCell.Y} to {currentHoveredCell.X},{currentHoveredCell.Y}");
+                this.Refresh();
+            }
+            if (isDragging)
+            {
+                this.Refresh();
+            }
+        }
+
+        public void Rescale(int windowWidth, int windowHeight, int menuHeight)
+        {
+            int width = windowWidth - 16;
+            int height = windowHeight - 39 - menuHeight;
+
+            CellSize = Math.Min(width, height) / 8;
+            this.SetBounds((width < height ? 0 : (width - height) / 2),
+                           (width < height ? (height - width) / 2 + menuHeight : menuHeight),
+                           CellSize * 8, CellSize * 8);
+            this.Refresh();
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnPaint(e);
             Bitmap doubleBufferingImage = new Bitmap(CellSize * 8, CellSize * 8);
-            using (Graphics doubleBufferingGraphics = Graphics.FromImage(doubleBufferingImage))
-            {
-                DrawSquares(doubleBufferingGraphics);
-                e.Graphics.DrawImage(doubleBufferingImage, 0, 0);
-            }
+            Graphics doubleBufferingGraphics = Graphics.FromImage(doubleBufferingImage);
+
+            DrawSquares(doubleBufferingGraphics);
+            DrawLayout(doubleBufferingGraphics);
+            HighlightHoveredOverCell(doubleBufferingGraphics);
+            DrawAvailableMoves(doubleBufferingGraphics);
+            DrawDraggedPiece(doubleBufferingGraphics);
+            e.Graphics.DrawImage(doubleBufferingImage, 0, 0);
         }
 
         private void DrawSquares(Graphics g)
         {
-            for (int i = 0; i < _size; i++)
+            for (int i = 0; i < 8; i++)
             {
-                for (int j = 0; j < _size; j++)
+                for (int j = 0; j < 8; j++)
                 {
-                    Brush brush = ((i % 2 + j % 2) % 2 == 0) ? Brushes.LightYellow : Brushes.SaddleBrown;
-                    g.FillRectangle(brush, CellSize * j, CellSize * i, CellSize, CellSize);
+                    g.FillRectangle(((i + j) % 2 == 0) ? Brushes.LightYellow : Brushes.SaddleBrown, CellSize * j, CellSize * i, CellSize, CellSize);
                 }
             }
         }
 
-        public void PlaceChessPieces()
-        {
-            // Code to place the chess pieces on the board goes here
-            // ...
+        private void DrawLayout(Graphics g)
+        { 
+            if (Layout != null) //luat de pe conetxt din event de la referee (context!=null & layout din context!=null)
+            {
+                foreach (Coordinate c in Layout.Keys)
+                {
+                    g.DrawImage(Layout[c].GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
+                }
+            }
         }
 
-        public void RescaleBoard(int windowWidth, int windowHeight)
+        private void DrawAvailableMoves(Graphics g)
         {
-            int width = windowWidth - 16;
-            int height = windowHeight - 39;
-            CellSize = Math.Min(width, height) / 8;
+            if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
+            {
+                APiece piece = Layout[LastHoveredCell];
+                if (piece != null && piece.Color == GameContext.CurrentPlayer) // Only show moves for the current player's pieces
+                {
+                    List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell, Layout);
+                    foreach (Coordinate destinationCoordinate in availableMoves)
+                    {
+                        g.DrawRectangle(redPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
+                        g.DrawRectangle(greenPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
+                    }
+                }
+            }
+        }
 
-            if (width < height)
-                this.SetBounds(0, (height - width) / 2, CellSize * 8, CellSize * 8);
-            else
-                this.SetBounds((width - height) / 2, 0, CellSize * 8, CellSize * 8);
+
+        private void HighlightHoveredOverCell(Graphics g)
+        {
+            if (LastHoveredCell != null)
+            {
+                g.DrawRectangle(highlightPen, LastHoveredCell.Y * CellSize, LastHoveredCell.X * CellSize, CellSize, CellSize);
+            }
+        }
+
+        private void DrawDraggedPiece(Graphics g)
+        {
+            if (isDragging && draggedPiece != null)
+            {
+                int mouseX = MousePosition.X - this.Parent.PointToScreen(this.Location).X;
+                int mouseY = MousePosition.Y - this.Parent.PointToScreen(this.Location).Y;
+                g.DrawImage(draggedPiece.GetImage(), mouseX - offsetX, mouseY - offsetY, CellSize, CellSize);
+            }
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            PieceColors? pieceColor = GetPieceColorFromLayout(LastHoveredCell);
+
+            if ((GameContext.CurrentPlayer == PieceColors.Black || (GameContext.CurrentPlayer == PieceColors.White && pieceColor == PieceColors.White)) && pieceColor == GameContext.CurrentPlayer)
+            {
+                ProcessPlayerMove(e);
+            }
+        }
+
+        private void ProcessPlayerMove(MouseEventArgs e)
+        {
+            int clickedX = e.Y / CellSize;
+            int clickedY = e.X / CellSize;
+            Coordinate clickedCell = Coordinate.GetInstance(clickedX, clickedY);
+
+            if (Layout.ContainsKey(clickedCell))
+            {
+                APiece clickedPiece = Layout[clickedCell];
+
+                if (clickedPiece != null && clickedPiece.GetAvailableMoves(clickedCell, Layout).Count > 0)
+                {
+                    draggedPiece = clickedPiece;
+                    originalCell = clickedCell;
+                    offsetX = e.X % CellSize;
+                    offsetY = e.Y % CellSize;
+                    isDragging = true;
+                }
+            }
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            if (isDragging && draggedPiece != null)
+            {
+                int clickedX = e.Y / CellSize;
+                int clickedY = e.X / CellSize;
+                Coordinate destinationCell = Coordinate.GetInstance(clickedX, clickedY);
+
+                if (destinationCell != originalCell)
+                {
+                    List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell, Layout);
+                    if (availableMoves.Contains(destinationCell))
+                    {
+                        if (Layout.ContainsKey(destinationCell))
+                        {
+                            Layout.Remove(destinationCell);
+                        }
+
+                        Layout.Remove(originalCell);
+                        Layout.Add(destinationCell, draggedPiece);
+
+                        MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
+
+                        GameContext.SwitchPlayer();
+                    }
+                }
+            }
+
+            draggedPiece = null;
+            originalCell = null;
+            isDragging = false;
 
             this.Refresh();
         }
 
-        // Any additional methods such as event handlers or helper methods for drawing, etc.
-        // ...
+        private PieceColors? GetPieceColorFromLayout(Coordinate coordinate)
+        {
+            if (Layout.ContainsKey(coordinate))
+            {
+                APiece piece = Layout[coordinate];
+                if (piece != null)
+                {
+                    return piece.Color;
+                }
+            }
+            return null;
+        }
+
+        public void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
+        {
+            this.GameContext = e.NewContext;
+            this.Refresh();
+        }
+
+        public void SaveGame()
+        {
+            if (ChessGame != null)
+            {
+                // Assuming "current_game.json" is managed by ChessGame, not passed here
+                ChessGame.SaveGame("current_game.json");
+            }
+            else
+            {
+                ChessGame = new ChessGame();
+            }
+        }
+
+        public void LoadGame(string filePath, int menuHeight)
+        {
+            if (ChessGame != null)
+            {
+                GameContext = ChessGame.LoadGame(filePath);
+                if (GameContext != null)
+                {
+                    Layout = GameContext.Layout; // Make sure the Board's layout is updated.
+                    ChessGame.GameContext = GameContext; // Update the ChessGame's context.
+                    this.Refresh(); // Refresh the board to reflect the new game state.
+                    Rescale(this.Parent.Width, this.Parent.Height, menuHeight); // Rescale after loading the game
+                }
+            }
+            else
+            {
+                MessageBox.Show("Chess game is not initialized.", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public void SetContext(Context newContext)
+        {
+            GameContext = newContext;
+            Layout = newContext.Layout;
+            this.Refresh();
+        }
+
+
     }
 }
