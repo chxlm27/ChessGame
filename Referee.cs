@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 
 namespace Chess
 {
@@ -14,12 +15,18 @@ namespace Chess
 
         public void Initialize()
         {
-            Context = null; // Resetting Context
+            Context = null;
         }
 
         public void Start()
         {
             Context = new Context();
+            if (Context == null)
+            {
+                Context = new Context();
+                Context.Layout = new ChessLayout();
+                Context.Layout.Initialize();
+            }
             ALayout Layout = new ChessLayout();
             Layout.Initialize();
             Context.Layout = Layout;

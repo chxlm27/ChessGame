@@ -231,7 +231,14 @@ namespace Chess
             this.Refresh();
         }
 
-        public void SaveGame()
+        public void SetContext(Context newContext)
+        {
+            GameContext = newContext;
+            Layout = newContext.Layout;
+            this.Refresh();
+        }
+
+        /*        public void SaveGame()
         {
             if (ChessGame != null)
             {
@@ -261,15 +268,7 @@ namespace Chess
             {
                 MessageBox.Show("Chess game is not initialized.", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        public void SetContext(Context newContext)
-        {
-            GameContext = newContext;
-            Layout = newContext.Layout;
-            this.Refresh();
-        }
-
+        }*/
 
     }
 }
