@@ -41,9 +41,7 @@ namespace Chess
 
         public override void Start()
         {
-            GameContext.CurrentPlayer = PieceColors.Black;
-            GameContextChangedEventArgs args = new GameContextChangedEventArgs(GameContext.Clone());
-            OnRefereeGameContextChanged(this, args);
+            referee.Start();
         }
 
 

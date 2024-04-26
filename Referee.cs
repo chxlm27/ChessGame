@@ -14,6 +14,11 @@ namespace Chess
 
         public void Initialize()
         {
+            Context = null; // Resetting Context
+        }
+
+        public void Start()
+        {
             Context = new Context();
             ALayout Layout = new ChessLayout();
             Layout.Initialize();
@@ -22,7 +27,7 @@ namespace Chess
 
         public bool IsValid(Coordinate originalCell, Coordinate destinationCell)
         {
-            if (Context.Layout.ContainsKey(originalCell))
+            if (Context != null && Context.Layout.ContainsKey(originalCell))
             {
                 APiece piece = Context.Layout[originalCell];
                 if (piece != null)
@@ -35,7 +40,7 @@ namespace Chess
 
         public void OnMoveProposed(object sender, MoveProposedEventArgs e)
         {
-            if (IsValid(e.ProposedMove.Source, e.ProposedMove.Destination))
+            if (Context != null && IsValid(e.ProposedMove.Source, e.ProposedMove.Destination))
             {
                 Context.Move(e.ProposedMove.Source, e.ProposedMove.Destination);
                 OnGameContextChanged(new GameContextChangedEventArgs(Context.Clone()));
