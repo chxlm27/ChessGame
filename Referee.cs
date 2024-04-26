@@ -31,6 +31,13 @@ namespace Chess
             Layout.Initialize();
             Context.Layout = Layout;
         }
+        public void StartWith(Context context)
+        {
+            Context = context;
+            ALayout Layout = new ChessLayout();
+            Layout.Initialize();
+            Context.Layout = Layout;
+        }
 
         public bool IsValid(Coordinate originalCell, Coordinate destinationCell)
         {

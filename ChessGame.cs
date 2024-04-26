@@ -88,9 +88,9 @@ namespace Chess
                     Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
                 };
                 string json = File.ReadAllText(filePath);
-                Context loadedContext = JsonConvert.DeserializeObject<Context>(json, settings);
-                GameContextChanged?.Invoke(this, new GameContextChangedEventArgs(loadedContext));
-                return loadedContext;
+                GameContext = JsonConvert.DeserializeObject<Context>(json, settings);
+                GameContextChanged?.Invoke(this, new GameContextChangedEventArgs(GameContext));
+                return GameContext;
             }
             catch (Exception ex)
             {
