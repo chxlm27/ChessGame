@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Chess
+namespace ChessGameApp
 {
     public partial class Board : UserControl
     {
@@ -13,7 +13,7 @@ namespace Chess
         private Coordinate LastHoveredCell;
         public ChessGame ChessGame { get; set; } 
 
-        private APiece draggedPiece;
+        private IPiece draggedPiece;
         private Coordinate originalCell;
         private int offsetX, offsetY;
         private bool isDragging = false;

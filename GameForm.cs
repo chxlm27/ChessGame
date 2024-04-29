@@ -1,8 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-using System.IO;
-
-namespace Chess
+﻿namespace ChessGameApp
 {
     public partial class GameForm : Form
     {
