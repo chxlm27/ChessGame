@@ -1,15 +1,18 @@
-﻿using System;
+﻿using Gamee.Chess;
+using Gamee.Framework;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace ChessGameApp
 {
-    public partial class Board : UserControl
+    public partial class Board : UserControl, IBoard
     {
         public int CellSize { get; private set; }
         private ALayout Layout { get; set; }
-        public Context GameContext;
+        public Context GameContext { get; set; } 
+
         private Coordinate LastHoveredCell;
         public ChessGame ChessGame { get; set; } 
 
@@ -110,7 +113,7 @@ namespace ChessGameApp
         {
             if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
             {
-                APiece piece = Layout[LastHoveredCell];
+                var piece = Layout[LastHoveredCell] as APiece; // Safe cast
                 if (piece != null && piece.Color == GameContext.CurrentPlayer) // Only show moves for the current player's pieces
                 {
                     List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell, Layout);
@@ -122,6 +125,7 @@ namespace ChessGameApp
                 }
             }
         }
+
 
 
         private void HighlightHoveredOverCell(Graphics g)
@@ -162,7 +166,7 @@ namespace ChessGameApp
 
             if (Layout.ContainsKey(clickedCell))
             {
-                APiece clickedPiece = Layout[clickedCell];
+                APiece clickedPiece = Layout[clickedCell] as APiece;
 
                 if (clickedPiece != null && clickedPiece.GetAvailableMoves(clickedCell, Layout).Count > 0)
                 {
@@ -216,7 +220,7 @@ namespace ChessGameApp
         {
             if (Layout.ContainsKey(coordinate))
             {
-                APiece piece = Layout[coordinate];
+                APiece piece = Layout[coordinate] as APiece;
                 if (piece != null)
                 {
                     return piece.Color;

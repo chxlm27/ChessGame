@@ -1,4 +1,9 @@
-﻿namespace ChessGameApp
+﻿using Gamee.Chess;
+using Gamee.Framework;
+using System;
+using System.Windows.Forms;
+
+namespace ChessGameApp
 {
     public partial class GameForm : Form
     {
@@ -33,16 +38,20 @@
             if (Game == null)
             {
                 Game = new ChessGame();
-                Game.Initialize(Board);
             }
 
+            // Create a Referee object to pass to the Initialize method
+            Referee referee = new Referee();
+
+            // Now pass both Board and Referee to the Initialize method
+            Game.Initialize(Board, referee);  // Adjusted this line to pass the newly created referee
             Board.Initialize();
-            Game.Initialize(Board);
             Board.ChessGame = Game; // Ensure Board has reference to ChessGame
             Board.GameContext = Game.GameContext;
             Board.Rescale(this.Width, this.Height, menuStrip1.Height);
             Game.Start();
         }
+
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {

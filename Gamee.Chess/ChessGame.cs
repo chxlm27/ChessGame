@@ -7,13 +7,13 @@ namespace Gamee.Chess
 {
     public class ChessGame : AGame
     {
-        private Board board;
+        private IBoard board;
         private Referee referee;
         public Context GameContext { get; set; } = new Context { Layout = new ChessLayout() };
 
         public event EventHandler<GameContextChangedEventArgs> GameContextChanged;
 
-        public override void Initialize(Board _board, Referee _referee)
+        public override void Initialize(IBoard _board, Referee _referee)
         {
             board = _board;
             referee = _referee;

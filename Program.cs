@@ -1,4 +1,7 @@
-﻿namespace ChessGameApp
+﻿using System;
+using System.Windows.Forms;
+
+namespace ChessGameApp
 {
     internal static class Program
     {

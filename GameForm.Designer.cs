@@ -1,4 +1,6 @@
-﻿namespace ChessGameApp
+﻿using System.Windows.Forms;
+using Gamee.Chess;
+namespace ChessGameApp
 {
     partial class GameForm : Form
     {
