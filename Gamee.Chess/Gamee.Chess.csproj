@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="ChessGame.cs" />
     <Compile Include="ChessLayout.cs" />
+    <Compile Include="ChessLayoutFactory.cs" />
     <Compile Include="ChessPieceTypeAdapter.cs" />
     <Compile Include="Data\Bishop.cs" />
     <Compile Include="Data\ChessPieceType.cs" />

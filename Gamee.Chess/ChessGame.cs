@@ -52,10 +52,10 @@ namespace Gamee.Chess
 
             var settings = new JsonSerializerSettings
             {
-                Formatting = Formatting.Indented,
                 TypeNameHandling = TypeNameHandling.Auto,
-                Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
+                Converters = new List<JsonConverter> { new ALayoutConverter(new ChessLayoutFactory()), new CoordinateConverter() }
             };
+
 
             string json = JsonConvert.SerializeObject(GameContext, settings);
             try
@@ -76,7 +76,11 @@ namespace Gamee.Chess
                 var settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
-                    Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
+                    Converters = new List<JsonConverter>
+            {
+                new ALayoutConverter(new ChessLayoutFactory()), // Pass the factory to the converter
+                new CoordinateConverter()
+            }
                 };
                 string json = File.ReadAllText(filePath);
                 GameContext = JsonConvert.DeserializeObject<Context>(json, settings);
@@ -89,5 +93,6 @@ namespace Gamee.Chess
                 return null;
             }
         }
+
     }
 }

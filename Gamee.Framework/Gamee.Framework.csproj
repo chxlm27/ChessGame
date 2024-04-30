@@ -54,6 +54,7 @@
     <Compile Include="Coordinate.cs" />
     <Compile Include="GameContextChangedEventArgs.cs" />
     <Compile Include="IBoard.cs" />
+    <Compile Include="ILayoutFactory.cs" />
     <Compile Include="IPiece.cs" />
     <Compile Include="IPieceType.cs" />
     <Compile Include="Move.cs" />
