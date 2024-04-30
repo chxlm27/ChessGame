@@ -9,6 +9,7 @@ namespace Gamee.Chess
         {
         }
 
+
         public override List<Coordinate> GetAvailableMoves(Coordinate source, ALayout layout)
         {
             List<Coordinate> availableMoves = new List<Coordinate>();

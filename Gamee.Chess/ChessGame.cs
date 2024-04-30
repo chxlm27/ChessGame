@@ -3,13 +3,14 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 namespace Gamee.Chess
 {
     public class ChessGame : AGame
     {
         private IBoard board;
         private Referee referee;
-        public Context GameContext { get; set; } = new Context { Layout = new ChessLayout() };
+        public Context GameContext { get; set; } = new Context();
 
         public event EventHandler<GameContextChangedEventArgs> GameContextChanged;
 
@@ -18,25 +19,22 @@ namespace Gamee.Chess
             board = _board;
             referee = _referee;
 
+            // Set the specific layout for chess
+            referee.SetLayout(new ChessLayout());
+
             board.Initialize();
             referee.Initialize();
 
-            // Connecting Board's MoveProposed to Referee's handler
             board.MoveProposed += referee.OnMoveProposed;
-            // Connecting Referee's GameContextChanged to Board's event handler
             referee.GameContextChanged += board.OnGameContextChanged;
-            // Ensuring that the referee's context change triggers game-wide updates
             referee.GameContextChanged += OnRefereeGameContextChanged;
-            // Saving the game whenever the state changes
             GameContext.StateChanged += () => SaveGame("current_game.json");
         }
-
 
         public override void Start()
         {
             referee.Start();
         }
-
 
         private void OnRefereeGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
@@ -56,8 +54,7 @@ namespace Gamee.Chess
             {
                 Formatting = Formatting.Indented,
                 TypeNameHandling = TypeNameHandling.Auto,
-                Converters = new List
-                <JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
+                Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
             };
 
             string json = JsonConvert.SerializeObject(GameContext, settings);
@@ -79,12 +76,10 @@ namespace Gamee.Chess
                 var settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
-                    Converters = new List
-                    <JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
+                    Converters = new List<JsonConverter> { new ALayoutConverter(), new CoordinateConverter() }
                 };
                 string json = File.ReadAllText(filePath);
-                GameContext = JsonConvert.DeserializeObject
-                <Context>(json, settings);
+                GameContext = JsonConvert.DeserializeObject<Context>(json, settings);
                 GameContextChanged?.Invoke(this, new GameContextChangedEventArgs(GameContext));
                 return GameContext;
             }
