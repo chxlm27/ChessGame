@@ -1,4 +1,5 @@
-﻿using Gamee.Chess;
+﻿using Gamee.Checkers;
+using Gamee.Chess;
 using Gamee.Framework;
 using System;
 using System.Collections.Generic;
@@ -10,12 +11,12 @@ namespace ChessGameApp
     public partial class Board : UserControl, IBoard
     {
         public int CellSize { get; private set; }
-        private ALayout LayoutChess { get; set; }
+        private ALayout Layout { get; set; }
         public Context GameContext { get; set; } 
 
         private Coordinate LastHoveredCell;
         public ChessGame ChessGame { get; set; } 
-
+        public CheckersGame CheckersGame { get; set; }
         private IPiece draggedPiece;
         private Coordinate originalCell;
         private int offsetX, offsetY;
@@ -36,12 +37,24 @@ namespace ChessGameApp
         {
             this.DoubleBuffered = true;
             this.MouseMove += Board_MouseMove;
-            LayoutChess = new ChessLayout();
-            LayoutChess.Initialize();
             if (GameContext == null)
                 GameContext = new Context();
-            if (ChessGame == null)
-                ChessGame = new ChessGame();
+        }
+
+        public void InitializeChessGame()
+        {
+            Layout = new ChessLayout();
+            Layout.Initialize();
+            ChessGame = new ChessGame();
+            GameContext.CurrentGameType = Context.GameType.Chess;  // Set the game type to Chess
+        }
+
+        public void InitializeCheckersGame()
+        {
+            Layout = new CheckersLayout();
+            Layout.Initialize();
+            CheckersGame = new CheckersGame();
+            GameContext.CurrentGameType = Context.GameType.Checkers;  // Set the game type to Checkers
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
@@ -100,23 +113,23 @@ namespace ChessGameApp
 
         private void DrawLayout(Graphics g)
         { 
-            if (LayoutChess != null) //luat de pe conetxt din event de la referee (context!=null & layout din context!=null)
+            if (Layout != null) //luat de pe conetxt din event de la referee (context!=null & layout din context!=null)
             {
-                foreach (Coordinate c in LayoutChess.Keys)
+                foreach (Coordinate c in Layout.Keys)
                 {
-                    g.DrawImage(LayoutChess[c].GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
+                    g.DrawImage(Layout[c].GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
                 }
             }
         }
 
         private void DrawAvailableMoves(Graphics g)
         {
-            if (LastHoveredCell != null && LayoutChess.ContainsKey(LastHoveredCell))
+            if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
             {
-                var piece = LayoutChess[LastHoveredCell] as APiece; // Safe cast
+                var piece = Layout[LastHoveredCell] as APiece; // Safe cast
                 if (piece != null && piece.Color == GameContext.CurrentPlayer) // Only show moves for the current player's pieces
                 {
-                    List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell, LayoutChess);
+                    List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell, Layout);
                     foreach (Coordinate destinationCoordinate in availableMoves)
                     {
                         g.DrawRectangle(redPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
@@ -164,11 +177,11 @@ namespace ChessGameApp
             int clickedY = e.X / CellSize;
             Coordinate clickedCell = Coordinate.GetInstance(clickedX, clickedY);
 
-            if (LayoutChess.ContainsKey(clickedCell))
+            if (Layout.ContainsKey(clickedCell))
             {
-                APiece clickedPiece = LayoutChess[clickedCell] as APiece;
+                APiece clickedPiece = Layout[clickedCell] as APiece;
 
-                if (clickedPiece != null && clickedPiece.GetAvailableMoves(clickedCell, LayoutChess).Count > 0)
+                if (clickedPiece != null && clickedPiece.GetAvailableMoves(clickedCell, Layout).Count > 0)
                 {
                     draggedPiece = clickedPiece;
                     originalCell = clickedCell;
@@ -191,16 +204,16 @@ namespace ChessGameApp
 
                 if (destinationCell != originalCell)
                 {
-                    List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell, LayoutChess);
+                    List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell, Layout);
                     if (availableMoves.Contains(destinationCell))
                     {
-                        if (LayoutChess.ContainsKey(destinationCell))
+                        if (Layout.ContainsKey(destinationCell))
                         {
-                            LayoutChess.Remove(destinationCell);
+                            Layout.Remove(destinationCell);
                         }
 
-                        LayoutChess.Remove(originalCell);
-                        LayoutChess.Add(destinationCell, draggedPiece);
+                        Layout.Remove(originalCell);
+                        Layout.Add(destinationCell, draggedPiece);
 
                         MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
 
@@ -218,9 +231,9 @@ namespace ChessGameApp
 
         private PieceColors? GetPieceColorFromLayout(Coordinate coordinate)
         {
-            if (LayoutChess.ContainsKey(coordinate))
+            if (Layout.ContainsKey(coordinate))
             {
-                APiece piece = LayoutChess[coordinate] as APiece;
+                APiece piece = Layout[coordinate] as APiece;
                 if (piece != null)
                 {
                     return piece.Color;
@@ -231,14 +244,22 @@ namespace ChessGameApp
 
         public void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
-            LayoutChess = e.NewContext.Layout; // doar contextul, fara layout
+            Layout = e.NewContext.Layout; // doar contextul, fara layout
             this.Refresh();
         }
 
         public void SetContext(Context newContext)
         {
             GameContext = newContext;
-            LayoutChess = newContext.Layout;
+            Layout = newContext.Layout;
+            if (GameContext.CurrentGameType == Context.GameType.Chess)
+            {
+                InitializeChessGame();
+            }
+            else if (GameContext.CurrentGameType == Context.GameType.Checkers)
+            {
+                InitializeCheckersGame();
+            }
             this.Refresh();
         }
 
@@ -262,7 +283,7 @@ namespace ChessGameApp
                 GameContext = ChessGame.LoadGame(filePath);
                 if (GameContext != null)
                 {
-                    LayoutChess = GameContext.LayoutChess; // Make sure the Board's layout is updated.
+                    Layout = GameContext.Layout; // Make sure the Board's layout is updated.
                     ChessGame.GameContext = GameContext; // Update the ChessGame's context.
                     this.Refresh(); // Refresh the board to reflect the new game state.
                     Rescale(this.Parent.Width, this.Parent.Height, menuHeight); // Rescale after loading the game

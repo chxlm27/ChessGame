@@ -2,16 +2,22 @@
 {
     public class Context
     {
+        public enum GameType
+        {
+            Chess,
+            Checkers
+        }
+
         public PieceColors CurrentPlayer { get; set; }
         public ALayout Layout { get; set; }
+        public GameType CurrentGameType { get; set; }  // Current type of the game
+
         public delegate void StateChangedHandler();
         public event StateChangedHandler StateChanged;
+
         public Context()
         {
             CurrentPlayer = PieceColors.Black;
-            //initializare layout in Game, instantiez acl layout si il transmit
-/*            Layout = new ChessLayout();
-            Layout.Initialize();*/
         }
 
         public Context Clone()
@@ -19,7 +25,8 @@
             return new Context
             {
                 CurrentPlayer = this.CurrentPlayer,
-                Layout = this.Layout.Clone()
+                Layout = this.Layout.Clone(),
+                CurrentGameType = this.CurrentGameType  // Ensure the game type is cloned as well
             };
         }
 
