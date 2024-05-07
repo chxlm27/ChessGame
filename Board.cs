@@ -10,7 +10,7 @@ namespace ChessGameApp
     public partial class Board : UserControl, IBoard
     {
         public int CellSize { get; private set; }
-        private ALayout Layout { get; set; }
+        private ALayout LayoutChess { get; set; }
         public Context GameContext { get; set; } 
 
         private Coordinate LastHoveredCell;
@@ -36,8 +36,8 @@ namespace ChessGameApp
         {
             this.DoubleBuffered = true;
             this.MouseMove += Board_MouseMove;
-            Layout = new ChessLayout();
-            Layout.Initialize();
+            LayoutChess = new ChessLayout();
+            LayoutChess.Initialize();
             if (GameContext == null)
                 GameContext = new Context();
             if (ChessGame == null)
@@ -100,23 +100,23 @@ namespace ChessGameApp
 
         private void DrawLayout(Graphics g)
         { 
-            if (Layout != null) //luat de pe conetxt din event de la referee (context!=null & layout din context!=null)
+            if (LayoutChess != null) //luat de pe conetxt din event de la referee (context!=null & layout din context!=null)
             {
-                foreach (Coordinate c in Layout.Keys)
+                foreach (Coordinate c in LayoutChess.Keys)
                 {
-                    g.DrawImage(Layout[c].GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
+                    g.DrawImage(LayoutChess[c].GetImage(), new Rectangle(c.Y * CellSize, c.X * CellSize, CellSize, CellSize));
                 }
             }
         }
 
         private void DrawAvailableMoves(Graphics g)
         {
-            if (LastHoveredCell != null && Layout.ContainsKey(LastHoveredCell))
+            if (LastHoveredCell != null && LayoutChess.ContainsKey(LastHoveredCell))
             {
-                var piece = Layout[LastHoveredCell] as APiece; // Safe cast
+                var piece = LayoutChess[LastHoveredCell] as APiece; // Safe cast
                 if (piece != null && piece.Color == GameContext.CurrentPlayer) // Only show moves for the current player's pieces
                 {
-                    List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell, Layout);
+                    List<Coordinate> availableMoves = piece.GetAvailableMoves(LastHoveredCell, LayoutChess);
                     foreach (Coordinate destinationCoordinate in availableMoves)
                     {
                         g.DrawRectangle(redPen, destinationCoordinate.Y * CellSize, destinationCoordinate.X * CellSize, CellSize, CellSize);
@@ -164,11 +164,11 @@ namespace ChessGameApp
             int clickedY = e.X / CellSize;
             Coordinate clickedCell = Coordinate.GetInstance(clickedX, clickedY);
 
-            if (Layout.ContainsKey(clickedCell))
+            if (LayoutChess.ContainsKey(clickedCell))
             {
-                APiece clickedPiece = Layout[clickedCell] as APiece;
+                APiece clickedPiece = LayoutChess[clickedCell] as APiece;
 
-                if (clickedPiece != null && clickedPiece.GetAvailableMoves(clickedCell, Layout).Count > 0)
+                if (clickedPiece != null && clickedPiece.GetAvailableMoves(clickedCell, LayoutChess).Count > 0)
                 {
                     draggedPiece = clickedPiece;
                     originalCell = clickedCell;
@@ -191,16 +191,16 @@ namespace ChessGameApp
 
                 if (destinationCell != originalCell)
                 {
-                    List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell, Layout);
+                    List<Coordinate> availableMoves = draggedPiece.GetAvailableMoves(originalCell, LayoutChess);
                     if (availableMoves.Contains(destinationCell))
                     {
-                        if (Layout.ContainsKey(destinationCell))
+                        if (LayoutChess.ContainsKey(destinationCell))
                         {
-                            Layout.Remove(destinationCell);
+                            LayoutChess.Remove(destinationCell);
                         }
 
-                        Layout.Remove(originalCell);
-                        Layout.Add(destinationCell, draggedPiece);
+                        LayoutChess.Remove(originalCell);
+                        LayoutChess.Add(destinationCell, draggedPiece);
 
                         MoveProposed?.Invoke(this, new MoveProposedEventArgs(new Move(originalCell, destinationCell)));
 
@@ -218,9 +218,9 @@ namespace ChessGameApp
 
         private PieceColors? GetPieceColorFromLayout(Coordinate coordinate)
         {
-            if (Layout.ContainsKey(coordinate))
+            if (LayoutChess.ContainsKey(coordinate))
             {
-                APiece piece = Layout[coordinate] as APiece;
+                APiece piece = LayoutChess[coordinate] as APiece;
                 if (piece != null)
                 {
                     return piece.Color;
@@ -231,14 +231,14 @@ namespace ChessGameApp
 
         public void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
-            Layout = e.NewContext.Layout; // doar contextul, fara layout
+            LayoutChess = e.NewContext.Layout; // doar contextul, fara layout
             this.Refresh();
         }
 
         public void SetContext(Context newContext)
         {
             GameContext = newContext;
-            Layout = newContext.Layout;
+            LayoutChess = newContext.Layout;
             this.Refresh();
         }
 
@@ -262,7 +262,7 @@ namespace ChessGameApp
                 GameContext = ChessGame.LoadGame(filePath);
                 if (GameContext != null)
                 {
-                    Layout = GameContext.Layout; // Make sure the Board's layout is updated.
+                    LayoutChess = GameContext.LayoutChess; // Make sure the Board's layout is updated.
                     ChessGame.GameContext = GameContext; // Update the ChessGame's context.
                     this.Refresh(); // Refresh the board to reflect the new game state.
                     Rescale(this.Parent.Width, this.Parent.Height, menuHeight); // Rescale after loading the game
