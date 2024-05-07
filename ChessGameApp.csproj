@@ -95,6 +95,10 @@
     <Folder Include="Pieces\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Gamee.Checkers\Gamee.Checkers.csproj">
+      <Project>{f18dd952-0e14-4c92-8caa-dc6cc84d8334}</Project>
+      <Name>Gamee.Checkers</Name>
+    </ProjectReference>
     <ProjectReference Include="Gamee.Chess\Gamee.Chess.csproj">
       <Project>{0cd910f7-f3ed-4c2b-95d1-9afed37b8366}</Project>
       <Name>Gamee.Chess</Name>
