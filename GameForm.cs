@@ -91,7 +91,7 @@ namespace ChessGameApp
 
         private void saveGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Board != null && Board.ChessGame != null && Board.ChessGame.GameContext != null)
+            if (Board != null && Board.GameContext != null)
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
@@ -103,15 +103,24 @@ namespace ChessGameApp
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    Board.ChessGame.SaveGame(saveFileDialog.FileName);
-                    MessageBox.Show("GameChess saved successfully to: " + saveFileDialog.FileName, "Save Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (Board.ChessGame != null)
+                    {
+                        Board.ChessGame.SaveGame(saveFileDialog.FileName);
+                        MessageBox.Show("Game saved successfully to: " + saveFileDialog.FileName, "Save Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else if (Board.CheckersGame != null)
+                    {
+                        Board.CheckersGame.SaveGame(saveFileDialog.FileName);
+                        MessageBox.Show("Game saved successfully to: " + saveFileDialog.FileName, "Save Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
             else
             {
-                MessageBox.Show("No game context available to save or Chess GameChess not initialized.", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No game context available to save or game not initialized.", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -132,17 +141,31 @@ namespace ChessGameApp
                         Controls.Add(Board);
                     }
 
-                    if (GameChess == null)
+                    if (Board.ChessGame == null && Board.CheckersGame == null)
                     {
-                        GameChess = new ChessGame();
+                        MessageBox.Show("No game initialized to load.", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
 
-                    Context loadedContext = GameChess.LoadGame(selectedFilePath);
-                    if (loadedContext != null)
+                    if (Board.ChessGame != null)
                     {
-                        Board.Rescale(this.Width, this.Height, menuStrip1.Height);
-                        Board.SetContext(loadedContext);
-                        MessageBox.Show("GameChess loaded successfully.");
+                        Context loadedContext = Board.ChessGame.LoadGame(selectedFilePath);
+                        if (loadedContext != null)
+                        {
+                            Board.Rescale(this.Width, this.Height, menuStrip1.Height);
+                            Board.SetContext(loadedContext);
+                            MessageBox.Show("Game loaded successfully.");
+                        }
+                    }
+                    else if (Board.CheckersGame != null)
+                    {
+                        Context loadedContext = Board.CheckersGame.LoadGame(selectedFilePath);
+                        if (loadedContext != null)
+                        {
+                            Board.Rescale(this.Width, this.Height, menuStrip1.Height);
+                            Board.SetContext(loadedContext);
+                            MessageBox.Show("Game loaded successfully.");
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -151,5 +174,6 @@ namespace ChessGameApp
                 }
             }
         }
+
     }
 }
