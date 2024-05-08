@@ -22,7 +22,7 @@ namespace Gamee.Checkers
             // Set the specific layout for checkers
             referee.SetLayout(new CheckersLayout());
 
-            board.Initialize();
+            board.Initialize(GameType.Checkers);
             referee.Initialize();
 
             board.MoveProposed += referee.OnMoveProposed;

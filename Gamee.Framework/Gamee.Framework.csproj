@@ -53,6 +53,7 @@
     <Compile Include="Converter\CoordinateConverter.cs" />
     <Compile Include="Coordinate.cs" />
     <Compile Include="GameContextChangedEventArgs.cs" />
+    <Compile Include="GameType.cs" />
     <Compile Include="IBoard.cs" />
     <Compile Include="ILayoutFactory.cs" />
     <Compile Include="IPiece.cs" />

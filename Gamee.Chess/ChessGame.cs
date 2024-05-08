@@ -22,7 +22,7 @@ namespace Gamee.Chess
             // Set the specific layout for chess
             referee.SetLayout(new ChessLayout());
             referee.Initialize();
-            board.Initialize();
+            board.Initialize(GameType.Chess);
 
             board.MoveProposed += referee.OnMoveProposed;
             referee.GameContextChanged += board.OnGameContextChanged;

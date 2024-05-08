@@ -13,7 +13,7 @@ namespace Gamee.Framework
         event EventHandler<MoveProposedEventArgs> MoveProposed;
 
         // Methods
-        void Initialize();
+        void Initialize(GameType gameType);
         void Rescale(int windowWidth, int windowHeight, int menuHeight);
         void SetContext(Context newContext);
         void OnGameContextChanged(object sender, GameContextChangedEventArgs e);

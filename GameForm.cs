@@ -38,7 +38,7 @@ namespace ChessGameApp
         {
             if (Board == null)
             {
-                Board = new Board();
+                Board = new Board(GameType.Chess); // Pass GameType.Chess to the constructor
                 Controls.Add(Board);
             }
 
@@ -52,7 +52,7 @@ namespace ChessGameApp
 
             // Now pass both Board and Referee to the Initialize method
             GameChess.Initialize(Board, referee);
-            Board.Initialize();
+            Board.Initialize(GameType.Chess); // Pass GameType.Chess to the Initialize method
             Board.ChessGame = GameChess;
             Board.GameContext = GameChess.GameContext;
             Board.Rescale(this.Width, this.Height, menuStrip1.Height);
@@ -63,7 +63,7 @@ namespace ChessGameApp
         {
             if (Board == null)
             {
-                Board = new Board();
+                Board = new Board(GameType.Checkers);
                 Controls.Add(Board);
             }
 
@@ -77,7 +77,7 @@ namespace ChessGameApp
 
             // Now pass both Board and Referee to the Initialize method
             GameCheckers.Initialize(Board, referee);
-            Board.Initialize();
+            Board.Initialize(GameType.Checkers);
             Board.CheckersGame = GameCheckers;
             Board.GameContext = GameCheckers.GameContext;
             Board.Rescale(this.Width, this.Height, menuStrip1.Height);
@@ -135,37 +135,35 @@ namespace ChessGameApp
                 try
                 {
                     string selectedFilePath = openFileDialog.FileName;
+
+                    // Check if a game board already exists
                     if (Board == null)
                     {
-                        Board = new Board();
+                        // If no game board exists, create a new one
+                        Board = new Board(GameType.Chess); // You can pass any game type here, as it doesn't matter for loading
                         Controls.Add(Board);
                     }
 
-                    if (Board.ChessGame == null && Board.CheckersGame == null)
-                    {
-                        MessageBox.Show("No game initialized to load.", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
+                    // Load the game context
+                    Context loadedContext = null;
                     if (Board.ChessGame != null)
                     {
-                        Context loadedContext = Board.ChessGame.LoadGame(selectedFilePath);
-                        if (loadedContext != null)
-                        {
-                            Board.Rescale(this.Width, this.Height, menuStrip1.Height);
-                            Board.SetContext(loadedContext);
-                            MessageBox.Show("Game loaded successfully.");
-                        }
+                        loadedContext = Board.ChessGame.LoadGame(selectedFilePath);
                     }
                     else if (Board.CheckersGame != null)
                     {
-                        Context loadedContext = Board.CheckersGame.LoadGame(selectedFilePath);
-                        if (loadedContext != null)
-                        {
-                            Board.Rescale(this.Width, this.Height, menuStrip1.Height);
-                            Board.SetContext(loadedContext);
-                            MessageBox.Show("Game loaded successfully.");
-                        }
+                        loadedContext = Board.CheckersGame.LoadGame(selectedFilePath);
+                    }
+
+                    if (loadedContext != null)
+                    {
+                        Board.Rescale(this.Width, this.Height, menuStrip1.Height);
+                        Board.SetContext(loadedContext);
+                        MessageBox.Show("Game loaded successfully.");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to load the game.", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception ex)
@@ -174,6 +172,7 @@ namespace ChessGameApp
                 }
             }
         }
+
 
     }
 }

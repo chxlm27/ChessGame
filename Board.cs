@@ -12,10 +12,10 @@ namespace ChessGameApp
     {
         public int CellSize { get; private set; }
         private ALayout Layout { get; set; }
-        public Context GameContext { get; set; } 
+        public Context GameContext { get; set; }
 
         private Coordinate LastHoveredCell;
-        public ChessGame ChessGame { get; set; } 
+        public ChessGame ChessGame { get; set; }
         public CheckersGame CheckersGame { get; set; }
 
         private IPiece draggedPiece;
@@ -29,21 +29,31 @@ namespace ChessGameApp
 
         public event EventHandler<MoveProposedEventArgs> MoveProposed;
 
-        public Board()
+        public Board(GameType gameType)
         {
-            Initialize();
+            Initialize(gameType);
         }
 
-        public void Initialize()
+        public void Initialize(GameType gameType)
         {
             this.DoubleBuffered = true;
             this.MouseMove += Board_MouseMove;
-            Layout = new ChessLayout();
+
+            if (gameType == GameType.Chess)
+            {
+                Layout = new ChessLayout();
+                ChessGame = new ChessGame();
+            }
+            else if (gameType == GameType.Checkers)
+            {
+                Layout = new CheckersLayout();
+                CheckersGame = new CheckersGame();
+            }
+
             Layout.Initialize();
+
             if (GameContext == null)
                 GameContext = new Context();
-            if (ChessGame == null)
-                ChessGame = new ChessGame();
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
@@ -102,8 +112,7 @@ namespace ChessGameApp
 
         private void DrawLayout(Graphics g)
         {
-         //   if (GameContext != null && GameContext.Layout != null) //luat de pe conetxt din event de la referee (context!=null & layout din context!=null)
-            if (Layout!=null)   
+            if (Layout != null)
             {
                 foreach (Coordinate c in Layout.Keys)
                 {
@@ -128,8 +137,6 @@ namespace ChessGameApp
                 }
             }
         }
-
-
 
         private void HighlightHoveredOverCell(Graphics g)
         {
