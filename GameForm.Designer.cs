@@ -1,13 +1,16 @@
-﻿using System.Windows.Forms;
+﻿using Gamee.Checkers;
 using Gamee.Chess;
+using System.Windows.Forms;
+
 namespace ChessGameApp
 {
-    partial class GameForm : Form
+    partial class GameForm
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private ChessGame chessGame; // Instantiate ChessGame
+        private ChessGame chessGame;
+        private CheckersGame checkersGame; // Added for Checkers Game
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
@@ -27,7 +30,8 @@ namespace ChessGameApp
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.gameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.beginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.beginChessGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.beginCheckersGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem(); // Added for Checkers Game
             this.saveGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,7 +51,8 @@ namespace ChessGameApp
             // gameToolStripMenuItem
             // 
             this.gameToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.beginToolStripMenuItem,
+            this.beginChessGameToolStripMenuItem,
+            this.beginCheckersGameToolStripMenuItem, // Added for Checkers Game
             this.saveGameToolStripMenuItem,
             this.loadGameToolStripMenuItem,
             this.exitToolStripMenuItem});
@@ -55,13 +60,19 @@ namespace ChessGameApp
             this.gameToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
             this.gameToolStripMenuItem.Text = "&Game";
             // 
-            // beginToolStripMenuItem
+            // beginChessGameToolStripMenuItem
             // 
-            this.beginToolStripMenuItem.Name = "beginToolStripMenuItem";
-            this.beginToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.beginToolStripMenuItem.Text = "&Begin";
-            this.beginToolStripMenuItem.Click += new System.EventHandler(this.beginToolStripMenuItem_Click);
-
+            this.beginChessGameToolStripMenuItem.Name = "beginChessGameToolStripMenuItem";
+            this.beginChessGameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.beginChessGameToolStripMenuItem.Text = "&Chess Game";
+            this.beginChessGameToolStripMenuItem.Click += new System.EventHandler(this.beginChessGameToolStripMenuItem_Click);
+            // 
+            // beginCheckersGameToolStripMenuItem
+            // 
+            this.beginCheckersGameToolStripMenuItem.Name = "beginCheckersGameToolStripMenuItem";
+            this.beginCheckersGameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.beginCheckersGameToolStripMenuItem.Text = "&Checkers Game"; // Added for Checkers Game
+            this.beginCheckersGameToolStripMenuItem.Click += new System.EventHandler(this.beginCheckersGameToolStripMenuItem_Click); // Added for Checkers Game
             // 
             // saveGameToolStripMenuItem
             // 
@@ -76,7 +87,6 @@ namespace ChessGameApp
             this.loadGameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadGameToolStripMenuItem.Text = "&Load Game";
             this.loadGameToolStripMenuItem.Click += new System.EventHandler(this.loadGameToolStripMenuItem_Click);
-
             // 
             // exitToolStripMenuItem
             // 
@@ -91,7 +101,7 @@ namespace ChessGameApp
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "GameForm";
-            this.Text = "Chess Game";
+            this.Text = "Game Form";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -110,7 +120,8 @@ namespace ChessGameApp
 
         private MenuStrip menuStrip1;
         private ToolStripMenuItem gameToolStripMenuItem;
-        private ToolStripMenuItem beginToolStripMenuItem;
+        private ToolStripMenuItem beginChessGameToolStripMenuItem;
+        private ToolStripMenuItem beginCheckersGameToolStripMenuItem; // Added for Checkers Game
         private ToolStripMenuItem exitToolStripMenuItem;
         private ToolStripMenuItem saveGameToolStripMenuItem;
         private ToolStripMenuItem loadGameToolStripMenuItem;

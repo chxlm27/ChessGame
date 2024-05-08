@@ -1,4 +1,5 @@
-﻿using Gamee.Chess;
+﻿using Gamee.Checkers;
+using Gamee.Chess;
 using Gamee.Framework;
 using System;
 using System.Windows.Forms;
@@ -7,7 +8,8 @@ namespace ChessGameApp
 {
     public partial class GameForm : Form
     {
-        private ChessGame Game { get; set; }
+        private ChessGame GameChess { get; set; }
+        private CheckersGame GameCheckers { get; set; }
         private Board Board { get; set; }
         private Context GameContext { get; set; }
 
@@ -22,12 +24,17 @@ namespace ChessGameApp
             Board?.Rescale(this.Width, this.Height, menuStrip1.Height);
         }
 
-        private void beginToolStripMenuItem_Click(object sender, EventArgs e)
+        private void beginChessGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            InitializeGame();
+            InitializeChessGame();
         }
 
-        private void InitializeGame()
+        private void beginCheckersGameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            InitializeCheckersGame();
+        }
+
+        private void InitializeChessGame()
         {
             if (Board == null)
             {
@@ -35,23 +42,47 @@ namespace ChessGameApp
                 Controls.Add(Board);
             }
 
-            if (Game == null)
+            if (GameChess == null)
             {
-                Game = new ChessGame();
+                GameChess = new ChessGame();
             }
 
             // Create a Referee object to pass to the Initialize method
             Referee referee = new Referee();
 
             // Now pass both Board and Referee to the Initialize method
-            Game.Initialize(Board, referee);  // Adjusted this line to pass the newly created referee
+            GameChess.Initialize(Board, referee);
             Board.Initialize();
-            Board.ChessGame = Game; // Ensure Board has reference to ChessGame
-            Board.GameContext = Game.GameContext;
+            Board.ChessGame = GameChess;
+            Board.GameContext = GameChess.GameContext;
             Board.Rescale(this.Width, this.Height, menuStrip1.Height);
-            Game.Start();
+            GameChess.Start();
         }
 
+        private void InitializeCheckersGame()
+        {
+            if (Board == null)
+            {
+                Board = new Board();
+                Controls.Add(Board);
+            }
+
+            if (GameCheckers == null)
+            {
+                GameCheckers = new CheckersGame();
+            }
+
+            // Create a Referee object to pass to the Initialize method
+            Referee referee = new Referee();
+
+            // Now pass both Board and Referee to the Initialize method
+            GameCheckers.Initialize(Board, referee);
+            Board.Initialize();
+            Board.CheckersGame = GameCheckers;
+            Board.GameContext = GameCheckers.GameContext;
+            Board.Rescale(this.Width, this.Height, menuStrip1.Height);
+            GameCheckers.Start();
+        }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -73,12 +104,12 @@ namespace ChessGameApp
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     Board.ChessGame.SaveGame(saveFileDialog.FileName);
-                    MessageBox.Show("Game saved successfully to: " + saveFileDialog.FileName, "Save Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("GameChess saved successfully to: " + saveFileDialog.FileName, "Save Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             else
             {
-                MessageBox.Show("No game context available to save or Chess Game not initialized.", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No game context available to save or Chess GameChess not initialized.", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -101,17 +132,17 @@ namespace ChessGameApp
                         Controls.Add(Board);
                     }
 
-                    if (Game == null)
+                    if (GameChess == null)
                     {
-                        Game = new ChessGame();
+                        GameChess = new ChessGame();
                     }
 
-                    Context loadedContext = Game.LoadGame(selectedFilePath);
+                    Context loadedContext = GameChess.LoadGame(selectedFilePath);
                     if (loadedContext != null)
                     {
                         Board.Rescale(this.Width, this.Height, menuStrip1.Height);
-                        Board.SetContext(loadedContext);  // Ensure the board is updated with the loaded game contex
-                        MessageBox.Show("Game loaded successfully.");
+                        Board.SetContext(loadedContext);
+                        MessageBox.Show("GameChess loaded successfully.");
                     }
                 }
                 catch (Exception ex)
@@ -120,7 +151,5 @@ namespace ChessGameApp
                 }
             }
         }
-
-
     }
 }

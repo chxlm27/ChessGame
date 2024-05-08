@@ -1,4 +1,5 @@
-﻿using Gamee.Chess;
+﻿using Gamee.Checkers;
+using Gamee.Chess;
 using Gamee.Framework;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace ChessGameApp
 
         private Coordinate LastHoveredCell;
         public ChessGame ChessGame { get; set; } 
+        public CheckersGame CheckersGame { get; set; }
 
         private IPiece draggedPiece;
         private Coordinate originalCell;
@@ -99,8 +101,9 @@ namespace ChessGameApp
         }
 
         private void DrawLayout(Graphics g)
-        { 
-            if (Layout != null) //luat de pe conetxt din event de la referee (context!=null & layout din context!=null)
+        {
+         //   if (GameContext != null && GameContext.Layout != null) //luat de pe conetxt din event de la referee (context!=null & layout din context!=null)
+            if (Layout!=null)   
             {
                 foreach (Coordinate c in Layout.Keys)
                 {

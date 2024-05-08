@@ -21,9 +21,8 @@ namespace Gamee.Chess
 
             // Set the specific layout for chess
             referee.SetLayout(new ChessLayout());
-
-            board.Initialize();
             referee.Initialize();
+            board.Initialize();
 
             board.MoveProposed += referee.OnMoveProposed;
             referee.GameContextChanged += board.OnGameContextChanged;
