@@ -48,14 +48,14 @@
     <Compile Include="ChessLayout.cs" />
     <Compile Include="ChessLayoutFactory.cs" />
     <Compile Include="ChessPieceTypeAdapter.cs" />
-    <Compile Include="Data\Bishop.cs" />
-    <Compile Include="Data\ChessPieceType.cs" />
-    <Compile Include="Data\King.cs" />
-    <Compile Include="Data\Knight.cs" />
-    <Compile Include="Data\Pawn.cs" />
-    <Compile Include="Data\PieceFactory.cs" />
-    <Compile Include="Data\Queen.cs" />
-    <Compile Include="Data\Rook.cs" />
+    <Compile Include="ChessData\Bishop.cs" />
+    <Compile Include="ChessData\ChessPieceType.cs" />
+    <Compile Include="ChessData\King.cs" />
+    <Compile Include="ChessData\Knight.cs" />
+    <Compile Include="ChessData\Pawn.cs" />
+    <Compile Include="ChessData\ChessPieceFactory.cs" />
+    <Compile Include="ChessData\Queen.cs" />
+    <Compile Include="ChessData\Rook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

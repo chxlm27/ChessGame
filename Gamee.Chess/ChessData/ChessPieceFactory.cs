@@ -3,7 +3,7 @@ using System;
 
 namespace Gamee.Chess
 {
-    public class PieceFactory
+    public class ChessPieceFactory
     {
         public static APiece CreatePiece(ChessPieceType type, PieceColors color)
         {
