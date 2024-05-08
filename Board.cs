@@ -241,38 +241,5 @@ namespace ChessGameApp
             Layout = newContext.Layout;
             this.Refresh();
         }
-
-        /*        public void SaveGame()
-        {
-            if (ChessGame != null)
-            {
-                // Assuming "current_game.json" is managed by ChessGame, not passed here
-                ChessGame.SaveGame("current_game.json");
-            }
-            else
-            {
-                ChessGame = new ChessGame();
-            }
-        }
-
-        public void LoadGame(string filePath, int menuHeight)
-        {
-            if (ChessGame != null)
-            {
-                GameContext = ChessGame.LoadGame(filePath);
-                if (GameContext != null)
-                {
-                    Layout = GameContext.Layout; // Make sure the Board's layout is updated.
-                    ChessGame.GameContext = GameContext; // Update the ChessGame's context.
-                    this.Refresh(); // Refresh the board to reflect the new game state.
-                    Rescale(this.Parent.Width, this.Parent.Height, menuHeight); // Rescale after loading the game
-                }
-            }
-            else
-            {
-                MessageBox.Show("Chess game is not initialized.", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }*/
-
     }
 }
