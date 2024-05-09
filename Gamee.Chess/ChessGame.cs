@@ -10,6 +10,8 @@ namespace Gamee.Chess
     {
         private IBoard board;
         private Referee referee;
+        private ALayout chessLayout; // Added to manage layout more directly
+
         public Context GameContext { get; set; } = new Context();
 
         public event EventHandler<GameContextChangedEventArgs> GameContextChanged;
@@ -19,11 +21,13 @@ namespace Gamee.Chess
             board = _board;
             referee = _referee;
 
-            // Set the specific layout for chess
-            referee.SetLayout(new ChessLayout());
+            // Create and set the specific layout for chess
+            chessLayout = new ChessLayout();
+            referee.SetLayout(chessLayout);
             referee.Initialize();
             board.Initialize(GameType.Chess);
 
+            // Subscribe to events
             board.MoveProposed += referee.OnMoveProposed;
             referee.GameContextChanged += board.OnGameContextChanged;
             referee.GameContextChanged += OnRefereeGameContextChanged;
@@ -32,11 +36,13 @@ namespace Gamee.Chess
 
         public override void Start()
         {
-            referee.Start();
+            // Ensure the layout is set before starting the referee
+            referee.Start(chessLayout); // Ensure the Start method passes the layout
         }
 
         private void OnRefereeGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
+            // Handle changes to game context from referee
             GameContext = e.NewContext;
             GameContextChanged?.Invoke(this, e);
         }
@@ -49,13 +55,14 @@ namespace Gamee.Chess
                 return;
             }
 
+            // JSON serialization settings
             var settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
                 Converters = new List<JsonConverter> { new ALayoutConverter(new ChessLayoutFactory()), new CoordinateConverter() }
             };
 
-
+            // Serialize and save game context
             string json = JsonConvert.SerializeObject(GameContext, settings);
             try
             {
@@ -70,17 +77,19 @@ namespace Gamee.Chess
 
         public override Context LoadGame(string filePath)
         {
+            // Load game context from file
             try
             {
                 var settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
                     Converters = new List<JsonConverter>
-            {
-                new ALayoutConverter(new ChessLayoutFactory()), // Pass the factory to the converter
-                new CoordinateConverter()
-            }
+                    {
+                        new ALayoutConverter(new ChessLayoutFactory()),
+                        new CoordinateConverter()
+                    }
                 };
+
                 string json = File.ReadAllText(filePath);
                 GameContext = JsonConvert.DeserializeObject<Context>(json, settings);
                 GameContextChanged?.Invoke(this, new GameContextChangedEventArgs(GameContext));
@@ -92,6 +101,5 @@ namespace Gamee.Chess
                 return null;
             }
         }
-
     }
 }

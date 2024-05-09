@@ -4,43 +4,52 @@ namespace Gamee.Framework
 {
     public class Referee
     {
-        public Context GameContext { get; set; }
+        public Context Context { get; set; }
 
         public event EventHandler<GameContextChangedEventArgs> GameContextChanged;
 
         public Referee()
         {
-            GameContext = new Context();
+            // Constructor remains empty as per your instruction
         }
 
         public void Initialize()
         {
-            // Ensure the context is clean or properly reset, without setting Layout here
+            // Ensure the context is clean or properly reset
+            Context = new Context();  // Context is initialized here if needed
         }
 
-        public void Start()
+        public void Start(ALayout layout) // Now taking a layout parameter
         {
-            if (GameContext.Layout == null)
+            SetLayout(layout);  // Set the layout passed as parameter
+
+            if (Context.Layout == null)
             {
                 throw new InvalidOperationException("Layout must be set before starting the game.");
             }
+
             // Initialize Layout if needed or other start logic
-            GameContext.Layout.Initialize();
+            Context.Layout.Initialize();
         }
 
         public void SetLayout(ALayout layout)
         {
-            GameContext.Layout = layout;
+            if (Context == null)
+            {
+                Initialize(); // Ensure the context is initialized
+            }
+            Context.Layout = layout;
         }
+
 
         public bool IsValid(Coordinate originalCell, Coordinate destinationCell)
         {
-            if (GameContext != null && GameContext.Layout.ContainsKey(originalCell))
+            if (Context != null && Context.Layout.ContainsKey(originalCell))
             {
-                IPiece piece = GameContext.Layout[originalCell];
+                IPiece piece = Context.Layout[originalCell];
                 if (piece is APiece aPiece)
                 {
-                    return aPiece.GetAvailableMoves(originalCell, GameContext.Layout).Contains(destinationCell);
+                    return aPiece.GetAvailableMoves(originalCell, Context.Layout).Contains(destinationCell);
                 }
             }
             return false;
@@ -48,12 +57,14 @@ namespace Gamee.Framework
 
         public void OnMoveProposed(object sender, MoveProposedEventArgs e)
         {
-            if (GameContext != null && IsValid(e.ProposedMove.Source, e.ProposedMove.Destination))
+            if (Context != null && IsValid(e.ProposedMove.Source, e.ProposedMove.Destination))
             {
-                GameContext.Move(e.ProposedMove.Source, e.ProposedMove.Destination);
-                OnGameContextChanged(new GameContextChangedEventArgs(GameContext.Clone()));
+                Context.Move(e.ProposedMove.Source, e.ProposedMove.Destination);
+                GameContextChangedEventArgs args = new GameContextChangedEventArgs(Context.Clone());
+                OnGameContextChanged(args);
             }
         }
+
 
         private void OnGameContextChanged(GameContextChangedEventArgs e)
         {

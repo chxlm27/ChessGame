@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Gamee.Framework;
+using System;
 
-namespace Gamee.Framework
+public class GameContextChangedEventArgs : EventArgs
 {
-    public class GameContextChangedEventArgs : EventArgs
+    public Context NewContext { get; }
+
+    public GameContextChangedEventArgs(Context newContext)
     {
-        public Context NewContext { get; private set; }
-
-        public GameContextChangedEventArgs(Context newContext)
-        {
-            NewContext = newContext;
-        }
+        NewContext = newContext;
     }
-
 }

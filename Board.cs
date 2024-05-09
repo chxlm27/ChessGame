@@ -241,9 +241,11 @@ namespace ChessGameApp
 
         public void OnGameContextChanged(object sender, GameContextChangedEventArgs e)
         {
-            Layout = e.NewContext.Layout; // doar contextul, fara layout
+            Context clonedContext = e.NewContext.Clone();
+            Layout = clonedContext.Layout;
             this.Refresh();
         }
+
 
         public void SetContext(Context newContext)
         {
