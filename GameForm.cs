@@ -38,7 +38,7 @@ namespace ChessGameApp
         {
             if (Board == null)
             {
-                Board = new Board(GameType.Chess); // Pass GameType.Chess to the constructor
+                Board = new Board(GameType.Chess);
                 Controls.Add(Board);
             }
 
@@ -47,7 +47,6 @@ namespace ChessGameApp
                 GameChess = new ChessGame();
             }
 
-            // Create a Referee object to pass to the Initialize method
             Referee referee = new Referee();
 
             // Now pass both Board and Referee to the Initialize method
