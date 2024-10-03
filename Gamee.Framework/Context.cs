@@ -9,9 +9,6 @@
         public Context()
         {
             CurrentPlayer = PieceColors.Black;
-            //initializare layout in Game, instantiez acl layout si il transmit
-/*            Layout = new ChessLayout();
-            Layout.Initialize();*/
         }
 
         public Context Clone()

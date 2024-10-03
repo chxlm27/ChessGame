@@ -10,25 +10,22 @@ namespace Gamee.Framework
 
         public Referee()
         {
-            // Constructor remains empty as per your instruction
         }
 
         public void Initialize()
         {
-            // Ensure the context is clean or properly reset
-            Context = new Context();  // Context is initialized here if needed
+            Context = new Context();
         }
 
-        public void Start(ALayout layout) // Now taking a layout parameter
+        public void Start(ALayout layout) 
         {
-            SetLayout(layout);  // Set the layout passed as parameter
+            SetLayout(layout); 
 
             if (Context.Layout == null)
             {
                 throw new InvalidOperationException("Layout must be set before starting the game.");
             }
 
-            // Initialize Layout if needed or other start logic
             Context.Layout.Initialize();
         }
 
@@ -36,7 +33,7 @@ namespace Gamee.Framework
         {
             if (Context == null)
             {
-                Initialize(); // Ensure the context is initialized
+                Initialize();
             }
             Context.Layout = layout;
         }

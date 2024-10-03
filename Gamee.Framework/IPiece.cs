@@ -7,7 +7,7 @@ namespace Gamee.Framework
     {
         List<Coordinate> GetAvailableMoves(Coordinate source, ALayout layout);
         PieceColors Color { get; }
-        IPieceType Type { get; }  // Changed from 'int' to 'IPieceType'
+        IPieceType Type { get; } 
         Image GetImage();
     }
 }

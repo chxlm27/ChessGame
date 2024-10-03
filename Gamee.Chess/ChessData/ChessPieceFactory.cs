@@ -27,4 +27,3 @@ namespace Gamee.Chess
         }
     }
 }
-//dict de coord si piese

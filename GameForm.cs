@@ -49,9 +49,8 @@ namespace ChessGameApp
 
             Referee referee = new Referee();
 
-            // Now pass both Board and Referee to the Initialize method
             GameChess.Initialize(Board, referee);
-            Board.Initialize(GameType.Chess); // Pass GameType.Chess to the Initialize method
+            Board.Initialize(GameType.Chess);
             Board.ChessGame = GameChess;
             Board.GameContext = GameChess.GameContext;
             Board.Rescale(this.Width, this.Height, menuStrip1.Height);
@@ -71,10 +70,8 @@ namespace ChessGameApp
                 GameCheckers = new CheckersGame();
             }
 
-            // Create a Referee object to pass to the Initialize method
             Referee referee = new Referee();
 
-            // Now pass both Board and Referee to the Initialize method
             GameCheckers.Initialize(Board, referee);
             Board.Initialize(GameType.Checkers);
             Board.CheckersGame = GameCheckers;
@@ -135,15 +132,12 @@ namespace ChessGameApp
                 {
                     string selectedFilePath = openFileDialog.FileName;
 
-                    // Check if a game board already exists
                     if (Board == null)
                     {
-                        // If no game board exists, create a new one
-                        Board = new Board(GameType.Chess); // You can pass any game type here, as it doesn't matter for loading
+                        Board = new Board(GameType.Chess);
                         Controls.Add(Board);
                     }
 
-                    // Load the game context
                     Context loadedContext = null;
                     if (Board.ChessGame != null)
                     {

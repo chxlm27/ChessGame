@@ -13,7 +13,7 @@ namespace Gamee.Chess
 
         public int GetPieceIndex()
         {
-            return (int)Type;  // Assuming ChessPieceType enum's values are set up as indexes
+            return (int)Type; 
         }
     }
 }

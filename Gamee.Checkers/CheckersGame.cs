@@ -10,7 +10,7 @@ namespace Gamee.Checkers
     {
         private IBoard board;
         private Referee referee;
-        private ALayout checkersLayout; // Added to manage layout more directly
+        private ALayout checkersLayout; 
 
         public Context GameContext { get; set; } = new Context();
 

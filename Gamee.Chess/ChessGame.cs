@@ -10,7 +10,7 @@ namespace Gamee.Chess
     {
         private IBoard board;
         private Referee referee;
-        private ALayout chessLayout; // Added to manage layout more directly
+        private ALayout chessLayout; 
 
         public Context GameContext { get; set; } = new Context();
 
